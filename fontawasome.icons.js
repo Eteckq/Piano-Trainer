@@ -2,6 +2,7 @@ export default {
   component: 'fa',
   suffix: true,
   icons: {
+    solid: ['faCog', 'faTimes'],
     brands: [
       'faFacebookSquare',
       'faTwitterSquare',

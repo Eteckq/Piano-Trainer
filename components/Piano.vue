@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div v-if="false">
-      Pressed:
+    <div v-if="debugValues" class="pl-10">
+      Pressed notes:
       <span v-for="(note, index) of pressedNotes" :key="index"
         >{{ note.name }} {{ note.octave }}</span
       >
       <br />
-      Sustain:
+      Sustained notes:
       <span v-for="(note, index) of sustainNotes" :key="index"
         >{{ note.name }} {{ note.octave }}</span
       >
@@ -29,7 +29,7 @@
           @mousedown="addNote(note)"
           @mouseup="removeNote(note)"
         >
-          <span class="absolute bottom-0 inset-x-0"
+          <span v-if="debugNotes" class="absolute bottom-0 inset-x-0"
             >{{ note.name }} {{ note.octave }}</span
           >
         </div>
@@ -42,7 +42,12 @@
 import WebMidi from 'webmidi'
 
 export default {
-  props: ['highlightedNotes'],
+  props: [
+    'highlightedNotes',
+    'debugNotes',
+    'debugValues',
+    'onlyLightCanBePlayed',
+  ],
   data() {
     return {
       pressedNotes: [],
@@ -145,13 +150,19 @@ export default {
     playNote(name, octave, velocity = 0.5) {
       this.stopNote(name, octave)
       const audio = this.audio[name + octave]
-      audio.volume = velocity
-      audio.play()
+      if (!audio) console.error('Note undefined', name, octave, velocity)
+      else {
+        audio.volume = velocity
+        audio.play()
+      }
     },
     stopNote(name, octave) {
       const audio = this.audio[name + octave]
-      audio.pause()
-      audio.currentTime = 0
+      if (!audio) console.error('Note undefined', name, octave)
+      else {
+        audio.pause()
+        audio.currentTime = 0
+      }
     },
     buildPianoNotes(count, startOctave) {
       this.audio = {}
@@ -175,6 +186,17 @@ export default {
           this.loadNotes(note.name, note.octave)
         }
       }
+
+      // Add last C
+
+      notes.push({
+        name: translateNote(count * 12),
+        octave: count * startOctave + 1,
+        number: count * 12,
+        velocity: 0.7,
+      })
+      this.loadNotes(translateNote(count * 12), count * startOctave + 1)
+
       this.pianoNotes = notes
     },
     isPressed(n) {
@@ -188,6 +210,12 @@ export default {
       })
     },
     addNote(note) {
+      if (this.onlyLightCanBePlayed) {
+        if (!this.isHighlighted(note)) {
+          return
+        }
+      }
+
       this.pressedNotes.push(note)
       this.playNote(note.name, note.octave, note.velocity)
       this.updateNotes()
@@ -244,11 +272,11 @@ export default {
 }
 
 .key.light.white {
-  background: linear-gradient(rgb(231, 255, 95) 30%, rgb(255, 255, 255) 100%);
+  background: linear-gradient(rgb(228 255 77) 30%, rgb(255 253 225) 100%);
 }
 
 .key.light.black {
-  background: linear-gradient(rgb(170, 189, 0) 36%, rgba(87, 87, 87, 1) 100%);
+  background: linear-gradient(rgb(0 0 0) -40%, rgb(142 158 54) 100%);
 }
 
 .key.pressed.white {

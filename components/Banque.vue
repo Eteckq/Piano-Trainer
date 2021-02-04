@@ -1,6 +1,6 @@
 <template>
   <div class="text-center">
-    <select v-model="selectedBanque" name="banque">
+    <select class="mb-5" v-model="selectedBanque" name="banque">
       <option v-for="(type, index) in banque" :key="index" :value="index">
         {{ index }}
       </option>
@@ -19,7 +19,7 @@
         </p>
       </div>
     </div>
-    <div v-if="selectedMode" class="flex justify-center">
+    <div class="flex justify-center">
       <div
         v-for="(note, i) of notes"
         :key="i"
