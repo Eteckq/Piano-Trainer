@@ -4,3 +4,10 @@
   </div>
 </template>
 
+<script>
+export default {
+  created() {
+    this.$store.commit('bank/createNote')
+  },
+}
+</script>

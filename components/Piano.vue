@@ -282,11 +282,11 @@ export default {
 .key.pressed.white {
   height: 295px;
   box-shadow: inset -1px -2px black;
-  background: linear-gradient(rgb(39, 0, 211) 10%, rgb(255, 255, 255) 100%);
+  /* background: linear-gradient(rgb(39, 0, 211) 10%, rgb(255, 255, 255) 100%); */
 }
 
 .key.pressed.black {
   height: 168px;
-  background: linear-gradient(rgb(0, 14, 211) 36%, rgba(87, 87, 87, 1) 100%);
+  /* background: linear-gradient(rgb(0, 14, 211) 36%, rgba(87, 87, 87, 1) 100%); */
 }
 </style>

@@ -50,7 +50,15 @@
       </div>
     </transition>
 
-    <Banque class="pt-10" @select="selectFromBanque" />
+    <div>
+      <Banque
+        v-if="displayMode === 0"
+        class="pt-10"
+        @select="selectFromBanque"
+      />
+      <Training v-if="displayMode === 1" />
+    </div>
+
     <Piano
       class="absolute inset-x-0"
       style="bottom: 50px"
@@ -71,6 +79,7 @@ import Vue from 'vue'
 export default Vue.extend({
   data() {
     return {
+      displayMode: 0,
       showParameters: false,
       debug: {
         notes: false,

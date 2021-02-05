@@ -1,6 +1,6 @@
 <template>
   <div class="text-center">
-    <select class="mb-5" v-model="selectedBanque" name="banque">
+    <select v-model="selectedBanque" class="mb-5" name="banque">
       <option v-for="(type, index) in banque" :key="index" :value="index">
         {{ index }}
       </option>
@@ -43,15 +43,16 @@
 export default {
   data() {
     return {
-      banque: {
-        accords: {},
-        gammes: {},
-      },
       notes: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
       selectedBanque: 'accords',
       selectedMode: null,
       selectedFondamentale: null,
     }
+  },
+  computed: {
+    banque() {
+      return this.$store.state.bank.banque
+    },
   },
   watch: {
     selectedBanque() {
@@ -68,42 +69,7 @@ export default {
       this.select()
     },
   },
-  created() {
-    this.buildAccords()
-    this.buildGammes()
-  },
   methods: {
-    buildAccords() {
-      this.banque.accords['M'] = this.noteBuilder([4, 7])
-      this.banque.accords['min'] = this.noteBuilder([3, 7])
-      this.banque.accords['Dim'] = this.noteBuilder([3, 6])
-      this.banque.accords['Aug'] = this.noteBuilder([4, 8])
-      this.banque.accords['5'] = this.noteBuilder([7])
-      this.banque.accords['7'] = this.noteBuilder([3, 7, 9])
-    },
-    buildGammes() {
-      this.banque.gammes['Majeur'] = this.noteBuilder([2, 4, 5, 7, 9, 11, 12])
-      this.banque.gammes['Mineur'] = this.noteBuilder([2, 3, 5, 7, 8, 10, 12])
-    },
-    noteBuilder(operations) {
-      const translateNote = (note) => {
-        return this.notes[note % 12]
-      }
-      const accords = []
-      // Pour chaque fondamentales
-      for (let fondamentale = 0; fondamentale < 12; fondamentale++) {
-        const accord = []
-        accord.push(translateNote(fondamentale))
-        for (const operation of operations) {
-          accord.push(translateNote(fondamentale + operation))
-        }
-        accords.push({
-          fondamentale: translateNote(fondamentale),
-          notes: accord,
-        })
-      }
-      return accords
-    },
     select() {
       if (
         this.selectedBanque &&
