@@ -47,6 +47,7 @@ export default {
     'debugNotes',
     'debugValues',
     'onlyLightCanBePlayed',
+    'octaveCount',
   ],
   data() {
     return {
@@ -54,9 +55,18 @@ export default {
       sustainNotes: [],
       notes: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
       pianoNotes: [],
-      audio: {},
       sustain: false,
     }
+  },
+  watch: {
+    sustain(val) {
+      if (!val) {
+        this.clearSustain()
+      }
+    },
+    octaveCount() {
+      this.buildPianoNotes(this.octaveCount, 3)
+    },
   },
   mounted() {
     const vm = this
@@ -78,6 +88,8 @@ export default {
       // Retrieving an output port/device using its id, name or index
       // output = WebMidi.outputs[0];
       const input = WebMidi.inputs[0]
+
+      if (!input) return
 
       // Retrieve an input by name, id or index
 
@@ -128,41 +140,14 @@ export default {
     })
   },
   created() {
-    this.buildPianoNotes(5, 1)
-  },
-  watch: {
-    sustain(val) {
-      if (!val) {
-        this.clearSustain()
-      }
-    },
+    this.buildPianoNotes(this.octaveCount, 3)
   },
   methods: {
-    loadNotes(name, octave) {
-      if (!process.client) return
-      const nameFormated = name.toLowerCase().replace('#', 's')
-      this.audio[name + octave] = new Audio(
-        `https://www.multiplayerpiano.com/sounds/Emotional_2.0/${
-          nameFormated + octave
-        }.mp3`
-      )
-    },
     playNote(name, octave, velocity = 0.5) {
-      this.stopNote(name, octave)
-      const audio = this.audio[name + octave]
-      if (!audio) console.error('Note undefined', name, octave, velocity)
-      else {
-        audio.volume = velocity
-        audio.play()
-      }
+      this.$store.dispatch('sounds/playNote', { name, octave, velocity })
     },
     stopNote(name, octave) {
-      const audio = this.audio[name + octave]
-      if (!audio) console.error('Note undefined', name, octave)
-      else {
-        audio.pause()
-        audio.currentTime = 0
-      }
+      this.$store.dispatch('sounds/stopNote', { name, octave })
     },
     buildPianoNotes(count, startOctave) {
       this.audio = {}
@@ -183,7 +168,6 @@ export default {
             velocity: 0.7,
           }
           notes.push(note)
-          this.loadNotes(note.name, note.octave)
         }
       }
 
@@ -195,7 +179,6 @@ export default {
         number: count * 12,
         velocity: 0.7,
       })
-      this.loadNotes(translateNote(count * 12), count * startOctave + 1)
 
       this.pianoNotes = notes
     },
@@ -210,6 +193,7 @@ export default {
       })
     },
     addNote(note) {
+      this.$emit('lastPressedNote', note)
       if (this.onlyLightCanBePlayed) {
         if (!this.isHighlighted(note)) {
           return

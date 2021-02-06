@@ -50,13 +50,24 @@
       </div>
     </transition>
 
+    <nav class="m-auto text-center">
+      <p @click="displayMode = 0">Banque</p>
+      <p @click="displayMode = 1">Training</p>
+      <p @click="displayMode = 2">Oreille</p>
+    </nav>
+
     <div>
       <Banque
         v-if="displayMode === 0"
         class="pt-10"
         @select="selectFromBanque"
       />
-      <Training v-if="displayMode === 1" />
+      <Training
+        v-if="displayMode === 1"
+        :pressed="pressed"
+        :last-pressed="lastPressed"
+      />
+      <Oreille v-if="displayMode === 2" :last-pressed="lastPressed" />
     </div>
 
     <Piano
@@ -66,7 +77,9 @@
       :only-light-can-be-played="debug.onlyLightCanBePlayed"
       :debug-notes="debug.notes"
       :debug-values="debug.values"
+      :octave-count="octaveCount"
       @notesPressed="(e) => (pressed = e)"
+      @lastPressedNote="(e) => (lastPressed = e)"
     />
   </div>
 </template>
@@ -79,7 +92,7 @@ import Vue from 'vue'
 export default Vue.extend({
   data() {
     return {
-      displayMode: 0,
+      displayMode: 1,
       showParameters: false,
       debug: {
         notes: false,
@@ -87,8 +100,15 @@ export default Vue.extend({
         onlyLightCanBePlayed: false,
       },
       pressed: [],
+      lastPressed: null,
       highlightedNotes: [],
+      octaveCount: 1,
     }
+  },
+  watch: {
+    displayMode() {
+      this.highlightedNotes = []
+    },
   },
 
   methods: {
