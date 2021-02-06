@@ -51,9 +51,18 @@
     </transition>
 
     <nav class="m-auto text-center">
-      <p @click="displayMode = 0">Banque</p>
-      <p @click="displayMode = 1">Training</p>
-      <p @click="displayMode = 2">Oreille</p>
+      Choix du mode:
+      <span class="cursor-pointer text-xl" @click="displayMode = 0"
+        >Banque</span
+      >
+      -
+      <span class="cursor-pointer text-xl" @click="displayMode = 1"
+        >Training</span
+      >
+      -
+      <span class="cursor-pointer text-xl" @click="displayMode = 2"
+        >Oreille</span
+      >
     </nav>
 
     <div>
@@ -106,8 +115,17 @@ export default Vue.extend({
     }
   },
   watch: {
-    displayMode() {
+    displayMode(mode) {
       this.highlightedNotes = []
+      if (mode === 0) {
+        this.octaveCount = 2
+      }
+      if (mode === 1) {
+        this.octaveCount = 2
+      }
+      if (mode === 2) {
+        this.octaveCount = 1
+      }
     },
   },
 

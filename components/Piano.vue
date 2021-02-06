@@ -12,8 +12,6 @@
       >
 
       <br />
-      <span>Sustain pedal:</span>
-      <input v-model="sustain" type="checkbox" />
     </div>
 
     <!-- Piano -->
@@ -35,6 +33,8 @@
         </div>
       </div>
     </div>
+    <span>Sustain pedal:</span>
+    <input v-model="sustain" type="checkbox" />
   </div>
 </template>
 
@@ -55,7 +55,7 @@ export default {
       sustainNotes: [],
       notes: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
       pianoNotes: [],
-      sustain: false,
+      sustain: true,
     }
   },
   watch: {
