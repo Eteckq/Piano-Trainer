@@ -2,7 +2,7 @@ import { NuxtConfig } from '@nuxt/types'
 import FaConfig from './fontawasome.icons'
 
 const config: NuxtConfig = {
-  target: 'server',
+  target: 'static',
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
