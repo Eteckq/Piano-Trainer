@@ -143,7 +143,7 @@ export default {
     this.buildPianoNotes(this.octaveCount, 3)
   },
   methods: {
-    playNote(name, octave, velocity = 0.5) {
+    playNote(name, octave, velocity) {
       this.$store.dispatch('sounds/playNote', { name, octave, velocity })
     },
     stopNote(name, octave) {
@@ -165,7 +165,6 @@ export default {
             name: translateNote(j),
             octave,
             number: octave * 12 + j,
-            velocity: 0.7,
           }
           notes.push(note)
         }
@@ -175,9 +174,8 @@ export default {
 
       notes.push({
         name: translateNote(count * 12),
-        octave: count * startOctave + 1,
+        octave: count + startOctave,
         number: count * 12,
-        velocity: 0.7,
       })
 
       this.pianoNotes = notes
@@ -193,15 +191,19 @@ export default {
       })
     },
     addNote(note) {
-      this.$emit('lastPressedNote', note)
+      const copyNote = { ...note }
+      if (!copyNote.velocity) {
+        copyNote.velocity = Math.random() * 0.5 + 0.5
+      }
+      this.$emit('lastPressedNote', copyNote)
       if (this.onlyLightCanBePlayed) {
-        if (!this.isHighlighted(note)) {
+        if (!this.isHighlighted(copyNote)) {
           return
         }
       }
 
-      this.pressedNotes.push(note)
-      this.playNote(note.name, note.octave, note.velocity)
+      this.pressedNotes.push(copyNote)
+      this.playNote(copyNote.name, copyNote.octave, copyNote.velocity)
       this.updateNotes()
     },
     removeNote(n) {

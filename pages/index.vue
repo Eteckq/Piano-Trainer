@@ -90,6 +90,8 @@
       @notesPressed="(e) => (pressed = e)"
       @lastPressedNote="(e) => (lastPressed = e)"
     />
+
+    <input v-model="volume" type="range" min="0" max="1" step="0.1" />
   </div>
 </template>
 
@@ -101,7 +103,7 @@ import Vue from 'vue'
 export default Vue.extend({
   data() {
     return {
-      displayMode: 1,
+      displayMode: null,
       showParameters: false,
       debug: {
         notes: false,
@@ -113,6 +115,16 @@ export default Vue.extend({
       highlightedNotes: [],
       octaveCount: 1,
     }
+  },
+  computed: {
+    volume: {
+      get() {
+        return this.$store.state.sounds.volume
+      },
+      set(newValue) {
+        this.$store.commit('sounds/setVolume', newValue)
+      },
+    },
   },
   watch: {
     displayMode(mode) {
@@ -128,7 +140,9 @@ export default Vue.extend({
       }
     },
   },
-
+  created() {
+    this.displayMode = 0
+  },
   methods: {
     selectFromBanque(accord) {
       this.highlightedNotes = accord.notes

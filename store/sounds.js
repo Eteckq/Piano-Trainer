@@ -1,5 +1,6 @@
 export const state = () => ({
   sounds: {},
+  volume: 0.5,
 })
 
 export const actions = {
@@ -9,7 +10,7 @@ export const actions = {
     dispatch('stopNote', { name, octave })
     if (!audio) console.error('Note undefined', name, octave, velocity)
     else {
-      audio.volume = velocity
+      audio.volume = velocity * state.volume
       audio.play()
     }
   },
@@ -25,6 +26,9 @@ export const actions = {
 }
 
 export const mutations = {
+  setVolume(state, volume) {
+    state.volume = volume
+  },
   loadSounds(state) {
     if (!process.client) return
     const notes = [
