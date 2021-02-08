@@ -39,8 +39,6 @@
 </template>
 
 <script>
-import WebMidi from 'webmidi'
-
 export default {
   props: [
     'highlightedNotes',
@@ -67,18 +65,11 @@ export default {
         return this.$store.state.inputs.sustain
       },
       set(val) {
-        if (!val) {
-          this.sustainNotes.map((note) => this.stopNote(note.name, note.octave))
-        }
         this.$store.commit('inputs/setSustain', val)
       },
     },
   },
   watch: {
-    notesPressed(val, old) {
-      console.log('UPDATE NOTE PRESSED')
-      console.log(val.filter((x) => !old.includes(x))[0])
-    },
     octaveCount() {
       this.buildPianoNotes(this.octaveCount, 3)
     },
@@ -87,12 +78,6 @@ export default {
     this.buildPianoNotes(this.octaveCount, 3)
   },
   methods: {
-    playNote(name, octave, velocity) {
-      this.$store.dispatch('sounds/playNote', { name, octave, velocity })
-    },
-    stopNote(name, octave) {
-      this.$store.dispatch('sounds/stopNote', { name, octave })
-    },
     buildPianoNotes(count, startOctave) {
       this.audio = {}
       const translateNote = (note) => {
@@ -138,16 +123,10 @@ export default {
     },
     addNote(note) {
       this.$store.commit('inputs/pushNote', note)
-      this.playNote(note.name, note.octave, note.velocity)
-
       // FIXME event: lastnote pressed & pressedNotes + light note can be played
     },
     removeNote(note) {
       this.$store.commit('inputs/removeNote', note)
-      if (!this.sustain) {
-        this.stopNote(note.name, note.octave)
-      }
-      // FIXME sustained note
     },
   },
 }

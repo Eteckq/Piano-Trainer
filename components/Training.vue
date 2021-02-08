@@ -58,7 +58,6 @@
 
 <script>
 export default {
-  props: ['pressed', 'lastPressed'],
   data() {
     return {
       inConfig: true,
@@ -74,9 +73,16 @@ export default {
     banque() {
       return this.$store.state.bank.banque
     },
+    pressedNotes() {
+      return this.$store.state.inputs.activeNotes
+    },
+    lastPressedNote() {
+      return this.$store.state.inputs.lastPressedNote
+    },
   },
   watch: {
-    lastPressed(val, last) {
+    lastPressedNote(val, last) {
+      console.log(val)
       if (this.inConfig) {
         return
       }

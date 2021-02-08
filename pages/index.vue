@@ -71,12 +71,8 @@
         class="pt-10"
         @select="selectFromBanque"
       />
-      <Training
-        v-if="displayMode === 1"
-        :pressed="pressed"
-        :last-pressed="lastPressed"
-      />
-      <Oreille v-if="displayMode === 2" :last-pressed="lastPressed" />
+      <Training v-if="displayMode === 1" />
+      <Oreille v-if="displayMode === 2" />
     </div>
 
     <Piano
@@ -87,8 +83,6 @@
       :debug-notes="debug.notes"
       :debug-values="debug.values"
       :octave-count="octaveCount"
-      @notesPressed="(e) => (pressed = e)"
-      @lastPressedNote="(e) => (lastPressed = e)"
     />
 
     <input v-model="volume" type="range" min="0" max="1" step="0.1" />
@@ -110,8 +104,6 @@ export default Vue.extend({
         values: false,
         onlyLightCanBePlayed: false,
       },
-      pressed: [],
-      lastPressed: null,
       highlightedNotes: [],
       octaveCount: 1,
     }

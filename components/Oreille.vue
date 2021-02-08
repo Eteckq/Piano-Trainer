@@ -24,7 +24,6 @@
 
 <script>
 export default {
-  props: ['lastPressed'],
   data() {
     return {
       inConfig: true,
@@ -43,9 +42,9 @@ export default {
     },
   },
   watch: {
-    lastPressed() {
+    pressedNotes() {
       if (this.step === 0) {
-        if (this.lastPressed.name === this.noteToFind) {
+        if (this.pressedNotes.some((note) => note.name === this.noteToFind)) {
           this.noteFound()
         } else {
           this.wrongNote()
