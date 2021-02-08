@@ -82,7 +82,6 @@
       :only-light-can-be-played="debug.onlyLightCanBePlayed"
       :debug-notes="debug.notes"
       :debug-values="debug.values"
-      :octave-count="octaveCount"
     />
 
     <input v-model="volume" type="range" min="0" max="1" step="0.1" />
@@ -105,7 +104,6 @@ export default Vue.extend({
         onlyLightCanBePlayed: false,
       },
       highlightedNotes: [],
-      octaveCount: 1,
     }
   },
   computed: {
@@ -121,14 +119,11 @@ export default Vue.extend({
   watch: {
     displayMode(mode) {
       this.highlightedNotes = []
-      if (mode === 0) {
-        this.octaveCount = 2
-      }
-      if (mode === 1) {
-        this.octaveCount = 2
-      }
+
       if (mode === 2) {
-        this.octaveCount = 1
+        this.$store.commit('piano/setOctaveCount', 1)
+      } else {
+        this.$store.commit('piano/setOctaveCount', 3)
       }
     },
   },
@@ -137,7 +132,7 @@ export default Vue.extend({
   },
   methods: {
     selectFromBanque(accord) {
-      this.highlightedNotes = accord.notes
+      this.highlightedNotes = accord.numbers
     },
   },
 })

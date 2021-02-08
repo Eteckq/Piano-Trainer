@@ -1,4 +1,5 @@
 import Vue from 'vue'
+const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 Vue.filter('toLatine', (value) => {
   return {
@@ -15,4 +16,12 @@ Vue.filter('toLatine', (value) => {
     'A#': 'La#',
     B: 'Si',
   }[value]
+})
+
+Vue.filter('toNoteName', (number) => {
+  return notes[number % 12]
+})
+
+Vue.filter('toNoteOctave', (number) => {
+  return Math.floor(number / 12) + 1
 })

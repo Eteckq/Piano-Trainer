@@ -1,8 +1,4 @@
 export const state = () => ({
-  inputs: {},
-  outputs: {},
-  activeInput: null,
-  activeOutput: null,
   activeNotes: [],
   sustainNotes: [],
   lastPressedNote: null,
@@ -12,29 +8,34 @@ export const state = () => ({
 export const actions = {}
 
 export const mutations = {
-  pushNote(state, note) {
-    state.activeNotes.push(note)
-    this.dispatch('sounds/playNote', note)
-    state.lastPressedNote = note
+  pushNote(state, { number, velocity }) {
+    if (state.activeNotes.some((n) => number === n)) {
+      state.activeNotes = state.activeNotes.filter((n) => {
+        return n !== number
+      })
+    }
+    state.activeNotes.push(number)
+    this.dispatch('sounds/playNote', { number, velocity })
+    state.lastPressedNote = number
   },
-  removeNote(state, note) {
+  removeNote(state, number) {
     state.activeNotes = state.activeNotes.filter((n) => {
-      return n.number !== note.number
+      return n !== number
     })
 
     if (state.sustain) {
-      state.sustainNotes = state.sustainNotes.filter(
-        (n) => !(n.number === note.number)
-      )
-      state.sustainNotes.push(note)
+      state.sustainNotes = state.sustainNotes.filter((n) => !(n === number))
+      state.sustainNotes.push(number)
     } else {
-      this.dispatch('sounds/stopNote', note)
+      this.dispatch('sounds/stopNote', number)
     }
   },
   setSustain(state, sustain) {
     state.sustain = sustain
     if (!sustain) {
-      state.sustainNotes.map((note) => this.dispatch('sounds/stopNote', note))
+      state.sustainNotes.map((number) =>
+        this.dispatch('sounds/stopNote', number)
+      )
       state.sustainNotes = []
     }
   },

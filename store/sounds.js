@@ -5,39 +5,37 @@ export const state = () => ({
 
 const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
-function getOctaveFromNumber(number) {
-  return Math.ceil(number / 12)
-}
-
 function getNoteFromNumber(number) {
-  return notes[number % 12]
+  return {
+    name: notes[number % 12],
+    octave: Math.floor(number / 12) + 1,
+    number,
+  }
 }
 
 export const actions = {
-  playNote({ state, dispatch }, { name, octave, number, velocity }) {
+  playNote({ state }, { number, velocity }) {
     if (!process.client) return
-    /* const toctave = getOctaveFromNumber(number)
-    const tname = getNoteFromNumber(number)
-    if (name === tname && toctave === octave) {
-      console.log('YES')
-    } else {
-      console.error(name, tname, octave, toctave)
-    } */
-    const audio = state.sounds[name + octave]
-    dispatch('stopNote', { name, octave })
-    if (!audio) console.error('Note undefined', name, octave, velocity)
+    const note = getNoteFromNumber(number)
+
+    const audio = state.sounds[note.name + note.octave]
+    if (!audio) console.error('Note undefined', note)
     else {
+      audio.pause()
       audio.currentTime = 0
       audio.volume = velocity * state.volume
       audio.play()
     }
   },
-  stopNote({ state }, { name, octave }) {
+  stopNote({ state }, number) {
+    console.log(number)
     if (!process.client) return
-    const audio = state.sounds[name + octave]
-    if (!audio) console.error('Note undefined', name, octave)
+    const note = getNoteFromNumber(number)
+    const audio = state.sounds[note.name + note.octave]
+    if (!audio) console.error('Note undefined', note)
     else {
       audio.pause()
+      audio.currentTime = 0
     }
   },
   loadSounds({ commit }) {

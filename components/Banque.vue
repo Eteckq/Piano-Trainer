@@ -1,5 +1,14 @@
 <template>
   <div class="text-center">
+    <div>
+      <input
+        id="allNote"
+        v-model="displayAllNote"
+        type="checkbox"
+        name="allNote"
+      />
+      <label for="allNote">Afficher toutes les notes</label>
+    </div>
     <select v-model="selectedBanque" class="mb-5" name="banque">
       <option v-for="(type, index) in banque" :key="index" :value="index">
         {{ index }}
@@ -47,6 +56,7 @@ export default {
       selectedBanque: 'accords',
       selectedMode: null,
       selectedFondamentale: null,
+      displayAllNote: false,
     }
   },
   computed: {
@@ -61,8 +71,15 @@ export default {
     selectedFondamentale() {
       this.select()
     },
+    displayAllNote() {
+      this.select()
+    },
   },
   methods: {
+    getNumberFromNote(note, octave) {
+      return octave * 12 + this.notes.indexOf(note)
+    },
+
     select() {
       if (
         this.selectedBanque &&
@@ -74,6 +91,33 @@ export default {
         ]
         accord.type = this.selectedBanque
         accord.mode = this.selectedMode
+
+        accord.numbers = []
+
+        let number = 0
+        for (const note of accord.notes) {
+          const oldNumber = number
+
+          number = this.getNumberFromNote(
+            note,
+            this.$store.state.piano.startingOctave
+          )
+          if (oldNumber > number) {
+            number += 12
+          }
+          accord.numbers.push(number)
+        }
+        if (this.displayAllNote) {
+          const tempNumbers = [...accord.numbers]
+          for (let number of tempNumbers) {
+            while (number - 12 >= 0) {
+              accord.numbers.push((number -= 12))
+            }
+            while (number + 12 < 97) {
+              accord.numbers.push((number += 12))
+            }
+          }
+        }
 
         this.$emit('select', accord)
       }

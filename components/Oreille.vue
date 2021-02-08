@@ -28,7 +28,6 @@ export default {
     return {
       inConfig: true,
       config: {},
-      notes: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
       noteToFind: null,
       step: 0,
     }
@@ -44,7 +43,7 @@ export default {
   watch: {
     pressedNotes() {
       if (this.step === 0) {
-        if (this.pressedNotes.some((note) => note.name === this.noteToFind)) {
+        if (this.pressedNotes.some((note) => note === this.noteToFind)) {
           this.noteFound()
         } else {
           this.wrongNote()
@@ -70,15 +69,12 @@ export default {
     },
     setRandomNote() {
       this.step = 0
-      this.noteToFind = this.notes[
-        Math.round(Math.random() * (this.notes.length - 1))
-      ]
+      this.noteToFind = Math.floor(Math.random() * 12) + 1
       this.playNote()
     },
     playNote() {
       this.$store.dispatch('sounds/playNote', {
-        name: this.noteToFind,
-        octave: 3,
+        number: 3 * 12 + this.noteToFind,
         velocity: 0.5,
       })
     },

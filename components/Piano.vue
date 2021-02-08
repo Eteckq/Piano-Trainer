@@ -2,13 +2,11 @@
   <div>
     <div v-if="debugValues" class="pl-10">
       Pressed notes:
-      <span v-for="(note, i) of pressedNotes" :key="i"
-        >{{ note.name }} {{ note.octave }} |
-      </span>
+      <span v-for="(note, i) of pressedNotes" :key="i">{{ note }} | </span>
       <br />
       Sustained notes:
       <span v-for="(note, index) of sustainNotes" :key="index"
-        >{{ note.name }} {{ note.octave }} |
+        >{{ note }} |
       </span>
 
       <br />
@@ -16,19 +14,19 @@
 
     <!-- Piano -->
     <div v-if="pianoNotes.length > 0" class="flex justify-center m-auto">
-      <div v-for="(note, index) of pianoNotes" :key="index" class="relative">
+      <div v-for="(number, index) of pianoNotes" :key="index" class="relative">
         <div
           class="key"
           :class="[
-            note.name[1] && note.name[1] == '#' ? 'black' : 'white',
-            isPressed(note) ? 'pressed' : '',
-            isHighlighted(note) ? 'light' : '',
+            isSharp(number) ? 'black' : 'white',
+            isPressed(number) ? 'pressed' : '',
+            isHighlighted(number) ? 'light' : '',
           ]"
-          @mousedown="addNote(note)"
-          @mouseup="removeNote(note)"
+          @mousedown="addNote(number)"
+          @mouseup="removeNote(number)"
         >
           <span v-if="debugNotes" class="absolute bottom-0 inset-x-0"
-            >{{ note.name }} {{ note.octave }}</span
+            >{{ number | toNoteName }} {{ number | toNoteOctave }}</span
           >
         </div>
       </div>
@@ -45,11 +43,9 @@ export default {
     'debugNotes',
     'debugValues',
     'onlyLightCanBePlayed',
-    'octaveCount',
   ],
   data() {
     return {
-      notes: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
       pianoNotes: [],
     }
   },
@@ -59,6 +55,12 @@ export default {
     },
     sustainNotes() {
       return this.$store.state.inputs.sustainNotes
+    },
+    octaveCount() {
+      return this.$store.state.piano.octaveCount
+    },
+    startingOctave() {
+      return this.$store.state.piano.startingOctave
     },
     sustain: {
       get() {
@@ -71,60 +73,62 @@ export default {
   },
   watch: {
     octaveCount() {
-      this.buildPianoNotes(this.octaveCount, 3)
+      this.buildPianoNotes()
+    },
+    startingOctave() {
+      this.buildPianoNotes()
     },
   },
-  created() {
-    this.buildPianoNotes(this.octaveCount, 3)
-  },
+  created() {},
   methods: {
-    buildPianoNotes(count, startOctave) {
-      this.audio = {}
-      const translateNote = (note) => {
-        return this.notes[note % 12]
-      }
-
+    buildPianoNotes() {
       const notes = []
 
-      for (let i = 0; i < count; i++) {
-        const octave = i + startOctave
+      for (let i = 0; i < this.octaveCount; i++) {
+        const octave = i + this.startingOctave
         for (let j = 0; j < 12; j++) {
-          const note = {
-            name: translateNote(j),
-            octave,
-            number: octave * 12 + j,
-            velocity: 0.7,
-          }
-          notes.push(note)
+          notes.push(octave * 12 + j)
         }
       }
 
       // Add last C
-      notes.push({
-        name: translateNote(count * 12),
-        octave: count + startOctave,
-        number: (count + startOctave) * 12,
-        velocity: 0.7,
-      })
+      notes.push((this.octaveCount + this.startingOctave) * 12)
 
       this.pianoNotes = notes
     },
     isPressed(n) {
-      return this.pressedNotes.some((note) => {
-        return note.name === n.name && note.octave === n.octave
+      return this.pressedNotes.some((number) => {
+        return number === n
       })
     },
     isHighlighted(n) {
-      return this.highlightedNotes.some((note) => {
-        return note === n.name
+      return this.highlightedNotes.some((number) => {
+        return number === n
       })
     },
-    addNote(note) {
-      this.$store.commit('inputs/pushNote', note)
+    isSharp(number) {
+      const name = [
+        'C',
+        'C#',
+        'D',
+        'D#',
+        'E',
+        'F',
+        'F#',
+        'G',
+        'G#',
+        'A',
+        'A#',
+        'B',
+      ][number % 12]
+      return name[1] && name[1] === '#'
+    },
+    addNote(number) {
+      this.$store.commit('inputs/pushNote', { number, velocity: 0.7 })
       // FIXME event: lastnote pressed & pressedNotes + light note can be played
     },
-    removeNote(note) {
-      this.$store.commit('inputs/removeNote', note)
+    removeNote(number) {
+      this.$store.commit('inputs/removeNote', number)
     },
   },
 }
