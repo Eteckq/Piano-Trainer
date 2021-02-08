@@ -12,6 +12,7 @@ export const actions = {
     dispatch('stopNote', { name, octave })
     if (!audio) console.error('Note undefined', name, octave, velocity)
     else {
+      audio.currentTime = 0
       audio.volume = velocity * state.volume
       audio.play()
     }
@@ -22,7 +23,6 @@ export const actions = {
     if (!audio) console.error('Note undefined', name, octave)
     else {
       audio.pause()
-      audio.currentTime = 0
     }
   },
   loadSounds({ commit }) {

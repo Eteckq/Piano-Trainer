@@ -2,14 +2,14 @@
   <div>
     <div v-if="debugValues" class="pl-10">
       Pressed notes:
-      <span v-for="(note, index) of pressedNotes" :key="index"
-        >{{ note.name }} {{ note.octave }}</span
-      >
+      <span v-for="(note, i) of pressedNotes" :key="i"
+        >{{ note.name }} {{ note.octave }} |
+      </span>
       <br />
       Sustained notes:
       <span v-for="(note, index) of sustainNotes" :key="index"
-        >{{ note.name }} {{ note.octave }}</span
-      >
+        >{{ note.name }} {{ note.octave }} |
+      </span>
 
       <br />
     </div>
@@ -51,101 +51,37 @@ export default {
   ],
   data() {
     return {
-      pressedNotes: [],
-      sustainNotes: [],
       notes: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
       pianoNotes: [],
-      sustain: true,
     }
   },
   computed: {
-    notesPressed() {
+    pressedNotes() {
       return this.$store.state.inputs.activeNotes
+    },
+    sustainNotes() {
+      return this.$store.state.inputs.sustainNotes
+    },
+    sustain: {
+      get() {
+        return this.$store.state.inputs.sustain
+      },
+      set(val) {
+        if (!val) {
+          this.sustainNotes.map((note) => this.stopNote(note.name, note.octave))
+        }
+        this.$store.commit('inputs/setSustain', val)
+      },
     },
   },
   watch: {
     notesPressed(val, old) {
+      console.log('UPDATE NOTE PRESSED')
       console.log(val.filter((x) => !old.includes(x))[0])
-    },
-    sustain(val) {
-      if (!val) {
-        this.clearSustain()
-      }
     },
     octaveCount() {
       this.buildPianoNotes(this.octaveCount, 3)
     },
-  },
-  mounted() {
-    const vm = this
-    WebMidi.enable(function (err) {
-      if (err) {
-        console.error(err)
-      }
-
-      // Reacting when a new device becomes available
-      WebMidi.addListener('connected', function (e) {
-        // console.log(e)
-      })
-
-      // Reacting when a device becomes unavailable
-      WebMidi.addListener('disconnected', function (e) {
-        // console.log(e)
-      })
-
-      // Retrieving an output port/device using its id, name or index
-      // output = WebMidi.outputs[0];
-      const input = WebMidi.inputs[0]
-
-      if (!input) return
-
-      // Retrieve an input by name, id or index
-
-      // Listen for a 'note on' message on all channels
-      input.addListener('noteon', 'all', function (e) {
-        vm.addNote({
-          name: e.note.name,
-          octave: e.note.octave - 1,
-          velocity: e.velocity,
-          number: e.note.number,
-        })
-      })
-      // Listen for a 'note off' message on all channels
-      input.addListener('noteoff', 'all', function (e) {
-        vm.removeNote({
-          name: e.note.name,
-          octave: e.note.octave - 1,
-          velocity: e.velocity,
-          number: e.note.number,
-        })
-      })
-
-      // Listen to pitch bend message on channel 3
-      input.addListener('pitchbend', 3, function (e) {
-        // console.log("Received 'pitchbend' message.", e);
-      })
-
-      // Listen to control change message on all channels
-      input.addListener('controlchange', 'all', function (e) {
-        // console.log("Received 'controlchange' message.", e);
-        if (e.data[2]) vm.sustain = true
-        else vm.sustain = false
-      })
-
-      // Listen to NRPN message on all channels
-      input.addListener('nrpn', 'all', function (e) {
-        if (e.controller.type === 'entry') {
-          console.log("Received 'nrpn' 'entry' message.", e)
-        }
-        if (e.controller.type === 'decrement') {
-          console.log("Received 'nrpn' 'decrement' message.", e)
-        }
-        if (e.controller.type === 'increment') {
-          console.log("Received 'nrpn' 'increment' message.", e)
-        }
-        console.log('message value: ' + e.controller.value + '.', e)
-      })
-    })
   },
   created() {
     this.buildPianoNotes(this.octaveCount, 3)
@@ -173,6 +109,7 @@ export default {
             name: translateNote(j),
             octave,
             number: octave * 12 + j,
+            velocity: 0.7,
           }
           notes.push(note)
         }
@@ -184,6 +121,7 @@ export default {
         name: translateNote(count * 12),
         octave: count + startOctave,
         number: count * 12,
+        velocity: 0.7,
       })
 
       this.pianoNotes = notes
@@ -199,41 +137,17 @@ export default {
       })
     },
     addNote(note) {
-      const copyNote = { ...note }
-      if (!copyNote.velocity) {
-        copyNote.velocity = Math.random() * 0.5 + 0.5
-      }
-      this.$emit('lastPressedNote', copyNote)
-      if (this.onlyLightCanBePlayed) {
-        if (!this.isHighlighted(copyNote)) {
-          return
-        }
-      }
+      this.$store.commit('inputs/pushNote', note)
+      this.playNote(note.name, note.octave, note.velocity)
 
-      this.pressedNotes.push(copyNote)
-      this.playNote(copyNote.name, copyNote.octave, copyNote.velocity)
-      this.updateNotes()
+      // FIXME event: lastnote pressed & pressedNotes + light note can be played
     },
-    removeNote(n) {
-      this.pressedNotes = this.pressedNotes.filter((note) => {
-        return note.number !== n.number
-      })
-      if (this.sustain) {
-        this.sustainNotes = this.sustainNotes.filter(
-          (note) => !(note.name === n.name && note.octave === n.octave)
-        )
-        this.sustainNotes.push(n)
-      } else {
-        this.stopNote(n.name, n.octave)
+    removeNote(note) {
+      this.$store.commit('inputs/removeNote', note)
+      if (!this.sustain) {
+        this.stopNote(note.name, note.octave)
       }
-      this.updateNotes()
-    },
-    clearSustain() {
-      this.sustainNotes.map(this.removeNote)
-      this.sustainNotes = []
-    },
-    updateNotes() {
-      this.$emit('notesPressed', this.pressedNotes)
+      // FIXME sustained note
     },
   },
 }

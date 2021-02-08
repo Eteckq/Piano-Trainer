@@ -38,6 +38,9 @@ export default {
     banque() {
       return this.$store.state.bank.banque
     },
+    pressedNotes() {
+      return this.$store.state.inputs.activeNotes
+    },
   },
   watch: {
     lastPressed() {

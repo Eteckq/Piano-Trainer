@@ -6,6 +6,7 @@ export const state = () => ({
   activeInput: null,
   activeOutput: null,
   activeNotes: [],
+  sustainNotes: [],
   sustain: true,
   keyboardConfig: {
     KeyA: 26,
@@ -73,15 +74,25 @@ export const actions = {
 }
 
 export const mutations = {
-  pushNote(state, { name, octave, velocity, number }) {
-    state.activeNotes.push({ name, octave, velocity, number })
+  pushNote(state, note) {
+    state.activeNotes.push(note)
   },
-  removeNote(state, { number }) {
-    state.activeNotes = state.activeNotes.filter((note) => {
-      return note.number !== number
+  removeNote(state, note) {
+    state.activeNotes = state.activeNotes.filter((n) => {
+      return n.number !== note.number
     })
+
+    if (state.sustain) {
+      state.sustainNotes = state.sustainNotes.filter(
+        (n) => !(n.number === note.number)
+      )
+      state.sustainNotes.push(note)
+    }
   },
   setSustain(state, sustain) {
     state.sustain = sustain
+    if (!sustain) {
+      state.sustainNotes = []
+    }
   },
 }
