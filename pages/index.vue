@@ -78,7 +78,6 @@
     <Piano
       class="absolute inset-x-0"
       style="bottom: 50px"
-      :highlighted-notes="highlightedNotes"
       :only-light-can-be-played="debug.onlyLightCanBePlayed"
       :debug-notes="debug.notes"
       :debug-values="debug.values"
@@ -103,7 +102,6 @@ export default Vue.extend({
         values: false,
         onlyLightCanBePlayed: false,
       },
-      highlightedNotes: [],
     }
   },
   computed: {
@@ -118,7 +116,7 @@ export default Vue.extend({
   },
   watch: {
     displayMode(mode) {
-      this.highlightedNotes = []
+      this.$store.commit('piano/setLightNotes', [])
 
       if (mode === 2) {
         this.$store.commit('piano/setOctaveCount', 1)
@@ -130,11 +128,7 @@ export default Vue.extend({
   created() {
     this.displayMode = 0
   },
-  methods: {
-    selectFromBanque(accord) {
-      this.highlightedNotes = accord.numbers
-    },
-  },
+  methods: {},
 })
 </script>
 

@@ -119,7 +119,7 @@ export default {
           }
         }
 
-        this.$emit('select', accord)
+        this.$store.commit('piano/setLightNotes', accord.numbers)
       }
     },
   },

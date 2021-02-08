@@ -38,18 +38,16 @@
 
 <script>
 export default {
-  props: [
-    'highlightedNotes',
-    'debugNotes',
-    'debugValues',
-    'onlyLightCanBePlayed',
-  ],
+  props: ['debugNotes', 'debugValues', 'onlyLightCanBePlayed'],
   data() {
     return {
       pianoNotes: [],
     }
   },
   computed: {
+    highlightedNotes() {
+      return this.$store.state.piano.lightNotes
+    },
     pressedNotes() {
       return this.$store.state.inputs.activeNotes
     },
