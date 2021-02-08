@@ -88,7 +88,6 @@ export default {
 
       for (let i = 0; i < count; i++) {
         const octave = i + startOctave
-
         for (let j = 0; j < 12; j++) {
           const note = {
             name: translateNote(j),
@@ -101,11 +100,10 @@ export default {
       }
 
       // Add last C
-
       notes.push({
         name: translateNote(count * 12),
         octave: count + startOctave,
-        number: count * 12,
+        number: (count + startOctave) * 12,
         velocity: 0.7,
       })
 

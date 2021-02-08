@@ -11,7 +11,19 @@ export default {
   data() {
     return {
       keyboardConfig: {
-        KeyA: 40,
+        KeyA: 36,
+        KeyW: 37,
+        KeyS: 38,
+        KeyE: 39,
+        KeyD: 40,
+        KeyF: 41,
+        KeyR: 42,
+        KeyG: 43,
+        KeyT: 44,
+        KeyH: 45,
+        KeyY: 46,
+        KeyJ: 47,
+        KeyK: 48,
       },
     }
   },
@@ -26,11 +38,11 @@ export default {
     initKeyboard() {
       if (!process.client) return
 
-      const getOctaveFromNumber = (number) => {
-        return Math.round(number / 12)
+      function getOctaveFromNumber(number) {
+        return Math.ceil(number / 12)
       }
 
-      const getNoteFromNumber = (number) => {
+      function getNoteFromNumber(number) {
         return notes[number % 12]
       }
 
@@ -49,6 +61,7 @@ export default {
       })
 
       document.addEventListener('keydown', (e) => {
+        // console.log(e.code)
         for (const key in this.keyboardConfig) {
           if (e.code === key) {
             const note = {
