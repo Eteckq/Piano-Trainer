@@ -6,8 +6,8 @@ export const mutations = {
   createNote(state) {
     state.banque.accords = {}
 
-    state.banque.accords.M = noteBuilder([4, 7])
-    state.banque.accords.min = noteBuilder([3, 7])
+    state.banque.accords.Majeur = noteBuilder([4, 7])
+    state.banque.accords.Mineur = noteBuilder([3, 7])
     state.banque.accords.Dim = noteBuilder([3, 6])
     state.banque.accords.Aug = noteBuilder([4, 8])
     state.banque.accords['5'] = noteBuilder([7])

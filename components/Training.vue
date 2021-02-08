@@ -49,7 +49,7 @@
       <h2>Mode: {{ config.mode }}</h2>
       <div v-if="accordToFind" class="text-6xl">
         {{ accordToFind.fondamentale }} <span class="text-gray-400">|</span>
-        {{ latineConvertion[accordToFind.fondamentale] }}
+        {{ accordToFind.fondamentale | toLatine }}
       </div>
       <p class="text-3xl">{{ leftNoteToFind }}</p>
     </div>
@@ -64,24 +64,10 @@ export default {
       inConfig: true,
       config: {
         type: 'accords',
-        mode: 'M',
+        mode: 'Majeur',
       },
       accordToFind: null,
       leftNoteToFind: 0,
-      latineConvertion: {
-        C: 'Do',
-        'C#': 'Do#',
-        D: 'Ré',
-        'D#': 'Ré#',
-        E: 'Mi',
-        F: 'Fa',
-        'F#': 'Fa#',
-        G: 'Sol',
-        'G#': 'Sol#',
-        A: 'La',
-        'A#': 'La#',
-        B: 'Si',
-      },
     }
   },
   computed: {

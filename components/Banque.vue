@@ -27,7 +27,7 @@
         :class="selectedFondamentale == note ? 'bg-red-200' : 'bg-white'"
         @click="selectedFondamentale = note"
       >
-        {{ note }}
+        {{ note }} ({{ note | toLatine }})
       </div>
     </div>
     <h2 class="text-2xl font-light">
@@ -55,13 +55,6 @@ export default {
     },
   },
   watch: {
-    selectedBanque() {
-      if (this.selectedBanque === 'accords') {
-        this.selectedMode = 'M'
-      } else if (this.selectedBanque === 'gammes') {
-        this.selectedMode = 'Majeur'
-      }
-    },
     selectedMode() {
       this.select()
     },
