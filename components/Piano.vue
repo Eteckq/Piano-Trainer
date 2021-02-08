@@ -58,7 +58,15 @@ export default {
       sustain: true,
     }
   },
+  computed: {
+    notesPressed() {
+      return this.$store.state.inputs.activeNotes
+    },
+  },
   watch: {
+    notesPressed(val, old) {
+      console.log(val.filter((x) => !old.includes(x))[0])
+    },
     sustain(val) {
       if (!val) {
         this.clearSustain()
