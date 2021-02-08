@@ -66,11 +66,7 @@
     </nav>
 
     <div>
-      <Banque
-        v-if="displayMode === 0"
-        class="pt-10"
-        @select="selectFromBanque"
-      />
+      <Banque v-if="displayMode === 0" class="pt-10" />
       <Training v-if="displayMode === 1" />
       <Oreille v-if="displayMode === 2" />
     </div>
@@ -120,6 +116,8 @@ export default Vue.extend({
 
       if (mode === 2) {
         this.$store.commit('piano/setOctaveCount', 1)
+      } else if (mode === 1) {
+        this.$store.commit('piano/setOctaveCount', 2)
       } else {
         this.$store.commit('piano/setOctaveCount', 3)
       }

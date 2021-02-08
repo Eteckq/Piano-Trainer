@@ -51,7 +51,7 @@
         {{ accordToFind.fondamentale }} <span class="text-gray-400">|</span>
         {{ accordToFind.fondamentale | toLatine }}
       </div>
-      <p class="text-3xl">{{ leftNoteToFind }}</p>
+      <p class="text-3xl">{{ leftNoteToFind.length }}</p>
     </div>
   </div>
 </template>
@@ -82,21 +82,24 @@ export default {
   },
   watch: {
     lastPressedNote(val, last) {
-      console.log(val)
+      console.log(this.accordToFind)
       if (this.inConfig) {
         return
       }
-      if (last && val.number === last.number) {
+
+      if (last && val === last) {
         return
       }
 
-      if (this.accordToFind.notes.some((note) => note === val.name)) {
-        this.leftNoteToFind--
-        if (this.leftNoteToFind === 0) {
+      if (this.accordToFind.numbers.some((note) => note === val)) {
+        this.leftNoteToFind = this.leftNoteToFind.filter(
+          (number) => number !== val
+        )
+        if (this.leftNoteToFind.length === 0) {
           this.setRandomAccord()
         }
       } else {
-        this.leftNoteToFind = this.accordToFind.notes.length
+        this.leftNoteToFind = this.accordToFind.numbers
       }
     },
   },
@@ -113,8 +116,34 @@ export default {
       }
     },
     setRandomAccord() {
+      const notes = [
+        'C',
+        'C#',
+        'D',
+        'D#',
+        'E',
+        'F',
+        'F#',
+        'G',
+        'G#',
+        'A',
+        'A#',
+        'B',
+      ]
       this.accordToFind = this.pickRandomChord(this.config.mode)
-      this.leftNoteToFind = this.accordToFind.notes.length
+
+      this.accordToFind.numbers = []
+      let oldNumber = 0
+      for (const note of this.accordToFind.notes) {
+        let number =
+          notes.indexOf(note) + 12 * this.$store.state.piano.startingOctave
+        if (number < oldNumber) {
+          number += 12
+        }
+        oldNumber = number
+        this.accordToFind.numbers.push(number)
+      }
+      this.leftNoteToFind = this.accordToFind.numbers
     },
   },
 }

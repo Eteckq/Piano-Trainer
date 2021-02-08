@@ -15,7 +15,7 @@
       <!-- <fa-icon class="text-white " :icon="['fas', 'check']" /> -->
       <span v-if="step === 0"> ? </span>
       <span v-if="step === 1">
-        {{ noteToFind }}
+        {{ noteToFind | toNoteName }}
       </span>
       <span v-if="step === 2"> X </span>
     </div>
@@ -36,14 +36,14 @@ export default {
     banque() {
       return this.$store.state.bank.banque
     },
-    pressedNotes() {
-      return this.$store.state.inputs.activeNotes
+    lastPressedNote() {
+      return this.$store.state.inputs.lastPressedNote
     },
   },
   watch: {
-    pressedNotes() {
+    lastPressedNote() {
       if (this.step === 0) {
-        if (this.pressedNotes.some((note) => note === this.noteToFind)) {
+        if (this.lastPressedNote === this.noteToFind) {
           this.noteFound()
         } else {
           this.wrongNote()
@@ -69,12 +69,15 @@ export default {
     },
     setRandomNote() {
       this.step = 0
-      this.noteToFind = Math.floor(Math.random() * 12) + 1
+      this.noteToFind =
+        this.$store.state.piano.startingOctave * 12 +
+        Math.floor(Math.random() * 12) +
+        1
       this.playNote()
     },
     playNote() {
       this.$store.dispatch('sounds/playNote', {
-        number: 3 * 12 + this.noteToFind,
+        number: this.noteToFind,
         velocity: 0.5,
       })
     },

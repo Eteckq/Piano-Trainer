@@ -65,6 +65,9 @@ export default {
     },
   },
   watch: {
+    selectedBanque() {
+      this.select()
+    },
     selectedMode() {
       this.select()
     },

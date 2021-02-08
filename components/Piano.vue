@@ -77,7 +77,9 @@ export default {
       this.buildPianoNotes()
     },
   },
-  created() {},
+  created() {
+    this.buildPianoNotes()
+  },
   methods: {
     buildPianoNotes() {
       const notes = []
