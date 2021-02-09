@@ -33,7 +33,6 @@ export const actions = {
     }
   },
   stopNote({ state }, number) {
-    console.log(number)
     if (!process.client) return
     const note = getNoteFromNumber(number)
     const audio = state.sounds[note.name + note.octave]

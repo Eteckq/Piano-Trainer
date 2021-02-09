@@ -1,6 +1,9 @@
 <template>
   <div>
+    <MenuTab />
     <Nuxt />
+    <Piano class="fixed bottom-0 inset-x-0" />
+    <!-- Configs -->
     <MidiConfig />
     <KeyboardConfig />
   </div>

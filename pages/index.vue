@@ -1,103 +1,142 @@
 <template>
-  <div class="w-screen h-screen bg-purple-900">
-    <!-- Parameters -->
-    <div class="absolute top-0 left-0 m-4 cursor-pointer">
-      <fa-icon
-        class="text-gray01 text-5xl transform transition-all duration-700 hover:rotate-45"
-        :icon="['fas', 'cog']"
-        @click="showParameters = true"
+  <div class="text-center">
+    <div>
+      <input
+        id="allNote"
+        v-model="displayAllNote"
+        type="checkbox"
+        name="allNote"
       />
+      <label for="allNote">Afficher toutes les notes</label>
     </div>
+    <select v-model="selectedBanque" class="mb-5" name="banque">
+      <option v-for="(type, index) in banque" :key="index" :value="index">
+        {{ index }}
+      </option>
+    </select>
 
-    <transition name="fade">
-      <div v-show="showParameters" class="p-10 bg-white absolute rounded-br-md">
-        <div class="mb-8">
-          <fa-icon
-            class="text-black text-5xl cursor-pointer absolute right-0 top-0 m-3"
-            :icon="['fas', 'times']"
-            @click="showParameters = false"
-          />
-        </div>
-        <div class="flex justify-between">
-          <label for="onlyLightCanBePlayed" class="mr-4"
-            >Only light note can be played</label
-          >
-          <input
-            id="onlyLightCanBePlayed"
-            v-model="onlyLightCanBePlayed"
-            type="checkbox"
-            name="onlyLightCanBePlayed"
-          />
-        </div>
+    <div class="flex justify-center">
+      <div
+        v-for="(accords, index) of banque[selectedBanque]"
+        :key="index"
+        class="p-2 m-2 cursor-pointer rounded-sm"
+        :class="selectedMode == index ? 'bg-red-200' : 'bg-white'"
+        @click="selectMode(index)"
+      >
+        <p class="text-center text-xl">
+          {{ index }}
+        </p>
       </div>
-    </transition>
-
-    <!-- Top Menu -->
-
-    <MenuTab @changeTab="changeTab" />
-
-    <div class="pt-10">
-      <Banque v-if="displayMode === 0" />
-      <Training v-if="displayMode === 1" />
-      <Oreille v-if="displayMode === 2" />
     </div>
-
-    <Piano class="fixed bottom-0 inset-x-0" />
+    <div class="flex justify-center">
+      <div
+        v-for="(note, i) of notes"
+        :key="i"
+        class="p-2 m-2 cursor-pointer rounded-sm"
+        :class="selectedFondamentale == note ? 'bg-red-200' : 'bg-white'"
+        @click="selectFondamentale(note)"
+      >
+        {{ note }} ({{ note | toLatine }})
+      </div>
+    </div>
+    <h2 class="text-2xl font-light">
+      <span v-if="selectedBanque === 'gammes'">Gamme</span
+      ><span v-if="selectedBanque === 'accords'">Accord</span>
+    </h2>
+    <span class="text-6xl">{{ selectedFondamentale }}</span
+    ><span class="text-xl">{{ selectedMode }}</span>
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-
-export default Vue.extend({
+export default {
   data() {
     return {
-      displayMode: null,
-      showParameters: false,
+      notes: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
+      selectedBanque: 'accords',
+      selectedMode: null,
+      selectedFondamentale: null,
+      displayAllNote: false,
     }
   },
   computed: {
-    onlyLightCanBePlayed: {
-      get() {
-        return this.$store.state.piano.onlyLightCanBePlayed
-      },
-      set(newValue) {
-        this.$store.commit('piano/setOnlyLightCanBePlayed', newValue)
-      },
+    banque() {
+      return this.$store.state.bank.banque
     },
   },
   watch: {
-    displayMode(mode) {
-      this.$store.commit('piano/setLightNotes', [])
-
-      if (mode === 2) {
-        this.$store.commit('piano/setOctaveCount', 1)
-      } else if (mode === 1) {
-        this.$store.commit('piano/setOctaveCount', 2)
-      } else {
-        this.$store.commit('piano/setOctaveCount', 3)
-      }
+    selectedBanque() {
+      this.select()
+    },
+    selectedMode() {
+      this.select()
+    },
+    selectedFondamentale() {
+      this.select()
+    },
+    displayAllNote() {
+      this.select()
     },
   },
   created() {
-    this.displayMode = 0
+    this.$store.commit('piano/setOctaveCount', 4)
   },
   methods: {
-    changeTab(tab) {
-      this.displayMode = tab
+    getNumberFromNote(note, octave) {
+      return octave * 12 + this.notes.indexOf(note)
+    },
+    selectMode(mode) {
+      if (this.selectedMode === mode) this.selectedMode = null
+      else this.selectedMode = mode
+    },
+    selectFondamentale(note) {
+      if (this.selectedFondamentale === note) this.selectedFondamentale = null
+      else this.selectedFondamentale = note
+    },
+    select() {
+      if (
+        this.selectedBanque &&
+        this.selectedMode &&
+        this.selectedFondamentale
+      ) {
+        const accord = this.banque[this.selectedBanque][this.selectedMode][
+          this.notes.indexOf(this.selectedFondamentale)
+        ]
+        accord.type = this.selectedBanque
+        accord.mode = this.selectedMode
+
+        accord.numbers = []
+
+        let number = 0
+        for (const note of accord.notes) {
+          const oldNumber = number
+
+          number = this.getNumberFromNote(
+            note,
+            this.$store.state.piano.startingOctave
+          )
+          if (oldNumber > number) {
+            number += 12
+          }
+          accord.numbers.push(number)
+        }
+        if (this.displayAllNote) {
+          const tempNumbers = [...accord.numbers]
+          for (let number of tempNumbers) {
+            while (number - 12 >= 0) {
+              accord.numbers.push((number -= 12))
+            }
+            while (number + 12 < 97) {
+              accord.numbers.push((number += 12))
+            }
+          }
+        }
+
+        this.$store.commit('piano/setLightNotes', accord.numbers)
+      } else {
+        this.$store.commit('piano/setLightNotes', [])
+      }
     },
   },
-})
+}
 </script>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.5s;
-  top: 0px;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
-  top: -100px;
-}
-</style>

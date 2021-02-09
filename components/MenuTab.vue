@@ -1,39 +1,45 @@
 <template>
   <section>
-    <input type="radio" id="menu0" value="1" name="tractor" checked="checked" />
-    <input type="radio" id="menu1" value="2" name="tractor" />
-    <input type="radio" id="menu2" value="3" name="tractor" />
-    <input type="radio" id="menu3" value="4" name="tractor" />
+    <input id="menu0" type="radio" value="1" name="tractor" checked="checked" />
+    <input id="menu1" type="radio" value="2" name="tractor" />
+    <input id="menu2" type="radio" value="3" name="tractor" />
+    <input id="menu3" type="radio" value="4" name="tractor" />
 
     <nav class="rounded-b-full">
-      <label @click="changeTab(0)" for="menu0" class=""
-        ><fa-icon class="text-5xl" :icon="['fas', 'list']"
-      /></label>
-      <label @click="changeTab(1)" for="menu1" class=""
-        ><fa-icon class="text-5xl" :icon="['fas', 'music']"
-      /></label>
-      <label @click="changeTab(2)" for="menu2" class=""
-        ><fa-icon class="text-5xl" :icon="['fas', 'list']"
-      /></label>
-      <label @click="changeTab(2)" for="menu3" class=""
-        ><fa-icon class="text-5xl" :icon="['fas', 'cog']"
-      /></label>
+      <nuxt-link to="/">
+        <label for="menu0" class=""
+          ><fa-icon class="text-5xl" :icon="['fas', 'list']"
+        /></label>
+      </nuxt-link>
+      <nuxt-link to="training">
+        <label for="menu1" class=""
+          ><fa-icon class="text-5xl" :icon="['fas', 'music']"
+        /></label>
+      </nuxt-link>
+      <nuxt-link to="ear">
+        <label for="menu2" class=""
+          ><fa-icon class="text-5xl" :icon="['fas', 'list']"
+        /></label>
+      </nuxt-link>
+      <nuxt-link to="parameters">
+        <label for="menu3" class=""
+          ><fa-icon class="text-5xl" :icon="['fas', 'cog']"
+        /></label>
+      </nuxt-link>
     </nav>
   </section>
 </template>
 
 <script>
 export default {
-  methods: {
-    changeTab(tab) {
-      this.$emit('changeTab', tab)
-    },
-  },
+  methods: {},
 }
 </script>
 
 <style scoped>
-* {
+nav,
+nav:after,
+label {
   margin: 0;
   padding: 0;
   border: 0 none;
@@ -41,9 +47,8 @@ export default {
 }
 
 section {
-  width: 80vw;
-  max-width: 40rem;
-  min-width: 390px;
+  max-width: 30rem;
+  min-width: 20rem;
   margin: auto;
 }
 
@@ -89,10 +94,6 @@ label:before {
 #menu3:checked ~ nav [for='menu3'] {
   color: #1f1e67;
   font-weight: 600;
-}
-#menu1:checked ~ nav [for='menu0'] {
-}
-#menu0:checked ~ nav [for='menu3'] {
 }
 
 #menu0:checked ~ nav:after {

@@ -82,7 +82,6 @@ export default {
   },
   watch: {
     lastPressedNote(val, last) {
-      console.log(this.accordToFind)
       if (this.inConfig) {
         return
       }
@@ -109,7 +108,9 @@ export default {
       )
     },
   },
-  created() {},
+  created() {
+    this.$store.commit('piano/setOctaveCount', 2)
+  },
   methods: {
     startTraining() {
       this.inConfig = false

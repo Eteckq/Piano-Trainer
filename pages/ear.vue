@@ -53,6 +53,7 @@ export default {
   },
   created() {
     this.setRandomNote()
+    this.$store.commit('piano/setOctaveCount', 1)
   },
   methods: {
     noteFound() {
