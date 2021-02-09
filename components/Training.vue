@@ -65,8 +65,8 @@ export default {
         type: 'accords',
         mode: 'Majeur',
       },
-      accordToFind: null,
-      leftNoteToFind: 0,
+      accordToFind: [],
+      leftNoteToFind: [],
     }
   },
   computed: {
@@ -101,6 +101,12 @@ export default {
       } else {
         this.leftNoteToFind = this.accordToFind.numbers
       }
+      this.$store.commit(
+        'piano/setLightNotes',
+        this.accordToFind.numbers.filter(
+          (x) => !this.leftNoteToFind.includes(x)
+        )
+      )
     },
   },
   created() {},

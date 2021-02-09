@@ -42,7 +42,7 @@
       <Oreille v-if="displayMode === 2" />
     </div>
 
-    <Piano />
+    <Piano class="fixed bottom-0 inset-x-0" />
   </div>
 </template>
 

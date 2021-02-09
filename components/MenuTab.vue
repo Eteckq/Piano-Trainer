@@ -57,7 +57,7 @@ nav:after {
   content: '';
   width: 25%;
   height: 5rem;
-  background: #bee3d1;
+  background: #bec4e3;
   position: absolute;
   transition: all 0.5s;
 }
@@ -67,7 +67,7 @@ input {
 label {
   width: 25%;
   float: left;
-  color: #bee3d1;
+  color: #c0bee3;
   text-align: center;
   cursor: pointer;
   transition: all 0.5s;
@@ -75,7 +75,7 @@ label {
   padding-top: 10px;
 }
 label:hover {
-  color: #1e6743;
+  color: #2b1e6780;
 }
 label:before {
   display: block;
@@ -87,7 +87,7 @@ label:before {
 #menu1:checked ~ nav [for='menu1'],
 #menu2:checked ~ nav [for='menu2'],
 #menu3:checked ~ nav [for='menu3'] {
-  color: #1e6743;
+  color: #1f1e67;
   font-weight: 600;
 }
 #menu1:checked ~ nav [for='menu0'] {

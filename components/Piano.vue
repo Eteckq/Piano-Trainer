@@ -1,37 +1,52 @@
 <template>
   <div>
-    <div class="bg-black h-16"></div>
+    <!-- <div class="bg-black h-16"></div> -->
     <!-- Piano -->
-    <div v-if="pianoNotes.length > 0" class="">
+    <div
+      v-if="pianoNotes.length > 0"
+      class="m-auto flex justify-center bg-black pt-16"
+    >
       <!-- Left Piano -->
-      <div id="leftPiano" class="bg-black w-16 float-left">
-        <span class="text-white">Sustain pedal:</span>
-        <input v-model="sustain" type="checkbox" />
+      <div id="leftPiano" class="bg-black w-16">
+        <label for="isSustain" class="text-white">Sustain</label>
+        <input
+          v-model="sustain"
+          type="checkbox"
+          id="isSustain"
+          name="isSustain"
+        />
       </div>
-      <div
-        v-for="(number, index) of pianoNotes"
-        :key="index"
-        class="relative float-left"
-      >
+      <div class="flex">
         <div
-          class="key"
-          :class="[
-            isSharp(number) ? 'black' : 'white',
-            isPressed(number) ? 'pressed' : '',
-            isHighlighted(number) ? 'light' : '',
-          ]"
-          @mousedown="addNote(number)"
-          @mouseup="removeNote(number)"
+          v-for="(number, index) of pianoNotes"
+          :key="index"
+          class="relative"
         >
-          <span v-if="debugNotes" class="absolute bottom-0 inset-x-0"
-            >{{ number | toNoteName }} {{ number | toNoteOctave }}</span
+          <div
+            class="key"
+            :class="[
+              isSharp(number) ? 'black' : 'white',
+              isPressed(number) ? 'pressed' : '',
+              isHighlighted(number) ? 'light' : '',
+            ]"
+            @mousedown="addNote(number)"
+            @mouseup="removeNote(number)"
           >
+            <span v-if="debugNotes" class="absolute bottom-0 inset-x-0"
+              >{{ number | toNoteName }} {{ number | toNoteOctave }}</span
+            >
+            <span
+              v-else-if="number % 12 === 0"
+              class="text-black absolute bottom-0 inset-x-0"
+              >{{ number | toNoteName }} {{ number | toNoteOctave }}</span
+            >
+          </div>
         </div>
       </div>
       <!-- Right Piano -->
       <div
         id="rightPiano"
-        class="bg-black w-16 flex flex-col justify-center items-center float-left"
+        class="bg-black w-16 flex flex-col justify-center items-center"
       >
         <fa-icon class="text-xl text-white my-2" :icon="['fas', 'volume-up']" />
         <input
@@ -168,8 +183,12 @@ export default {
   width: 40px;
   height: 300px;
   z-index: 1;
-  background: linear-gradient(rgb(206, 206, 206) 0%, rgb(255, 255, 255) 20%);
-  box-shadow: inset 1px -2px black;
+  border-left: 1px solid #bbb;
+  border-bottom: 1px solid #bbb;
+  border-radius: 0 0 5px 5px;
+  box-shadow: -1px 0 0 rgba(255, 255, 255, 0.8) inset, 0 0 5px #ccc inset,
+    0 0 3px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(to bottom, #eee 0%, #fff 100%);
 }
 .key.black {
   position: absolute;
@@ -177,7 +196,11 @@ export default {
   width: 25px;
   height: 170px;
   z-index: 2;
-  background: linear-gradient(rgba(0, 0, 0, 1) 36%, rgba(87, 87, 87, 1) 100%);
+  border: 1px solid #000;
+  border-radius: 0 0 3px 3px;
+  box-shadow: -1px -1px 2px rgba(255, 255, 255, 0.2) inset,
+    0 -5px 2px 3px rgba(0, 0, 0, 0.6) inset, 0 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(45deg, #222 0%, #555 100%);
 }
 
 .key.light.white {
@@ -190,13 +213,17 @@ export default {
 
 .key.pressed.white {
   height: 295px;
-  box-shadow: inset -1px -2px black;
-  /* background: linear-gradient(rgb(39, 0, 211) 10%, rgb(255, 255, 255) 100%); */
+  border-top: 1px solid #777;
+  border-left: 1px solid #999;
+  border-bottom: 1px solid #999;
+  box-shadow: 2px 0 3px rgba(0, 0, 0, 0.1) inset,
+    -5px 5px 20px rgba(0, 0, 0, 0.2) inset, 0 0 3px rgba(0, 0, 0, 0.2);
 }
 
 .key.pressed.black {
   height: 168px;
-  /* background: linear-gradient(rgb(0, 14, 211) 36%, rgba(87, 87, 87, 1) 100%); */
+  box-shadow: -1px -1px 2px rgba(255, 255, 255, 0.2) inset,
+    0 -2px 2px 3px rgba(0, 0, 0, 0.6) inset, 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 #rightPiano,

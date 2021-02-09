@@ -21,7 +21,7 @@
         :key="index"
         class="p-2 m-2 cursor-pointer rounded-sm"
         :class="selectedMode == index ? 'bg-red-200' : 'bg-white'"
-        @click="selectedMode = index"
+        @click="selectMode(index)"
       >
         <p class="text-center text-xl">
           {{ index }}
@@ -34,7 +34,7 @@
         :key="i"
         class="p-2 m-2 cursor-pointer rounded-sm"
         :class="selectedFondamentale == note ? 'bg-red-200' : 'bg-white'"
-        @click="selectedFondamentale = note"
+        @click="selectFondamentale(note)"
       >
         {{ note }} ({{ note | toLatine }})
       </div>
@@ -82,7 +82,14 @@ export default {
     getNumberFromNote(note, octave) {
       return octave * 12 + this.notes.indexOf(note)
     },
-
+    selectMode(mode) {
+      if (this.selectedMode === mode) this.selectedMode = null
+      else this.selectedMode = mode
+    },
+    selectFondamentale(note) {
+      if (this.selectedFondamentale === note) this.selectedFondamentale = null
+      else this.selectedFondamentale = note
+    },
     select() {
       if (
         this.selectedBanque &&
@@ -123,6 +130,8 @@ export default {
         }
 
         this.$store.commit('piano/setLightNotes', accord.numbers)
+      } else {
+        this.$store.commit('piano/setLightNotes', [])
       }
     },
   },
