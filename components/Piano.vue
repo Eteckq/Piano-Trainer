@@ -1,20 +1,18 @@
 <template>
   <div>
-    <div v-if="debugValues" class="pl-10">
-      Pressed notes:
-      <span v-for="(note, i) of pressedNotes" :key="i">{{ note }} | </span>
-      <br />
-      Sustained notes:
-      <span v-for="(note, index) of sustainNotes" :key="index"
-        >{{ note }} |
-      </span>
-
-      <br />
-    </div>
-
+    <div class="bg-black h-16"></div>
     <!-- Piano -->
-    <div v-if="pianoNotes.length > 0" class="flex justify-center m-auto">
-      <div v-for="(number, index) of pianoNotes" :key="index" class="relative">
+    <div v-if="pianoNotes.length > 0" class="">
+      <!-- Left Piano -->
+      <div id="leftPiano" class="bg-black w-16 float-left">
+        <span class="text-white">Sustain pedal:</span>
+        <input v-model="sustain" type="checkbox" />
+      </div>
+      <div
+        v-for="(number, index) of pianoNotes"
+        :key="index"
+        class="relative float-left"
+      >
         <div
           class="key"
           :class="[
@@ -30,21 +28,43 @@
           >
         </div>
       </div>
+      <!-- Right Piano -->
+      <div
+        id="rightPiano"
+        class="bg-black w-16 flex flex-col justify-center items-center float-left"
+      >
+        <fa-icon class="text-xl text-white my-2" :icon="['fas', 'volume-up']" />
+        <input
+          v-model="volume"
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          name="soundInput"
+          id="soundInput"
+        />
+      </div>
     </div>
-    <span>Sustain pedal:</span>
-    <input v-model="sustain" type="checkbox" />
   </div>
 </template>
 
 <script>
 export default {
-  props: ['debugNotes', 'debugValues'],
   data() {
     return {
       pianoNotes: [],
+      debugNotes: false,
     }
   },
   computed: {
+    volume: {
+      get() {
+        return this.$store.state.sounds.volume
+      },
+      set(newValue) {
+        this.$store.commit('sounds/setVolume', newValue)
+      },
+    },
     highlightedNotes() {
       return this.$store.state.piano.lightNotes
     },
@@ -177,5 +197,15 @@ export default {
 .key.pressed.black {
   height: 168px;
   /* background: linear-gradient(rgb(0, 14, 211) 36%, rgba(87, 87, 87, 1) 100%); */
+}
+
+#rightPiano,
+#leftPiano {
+  height: 310px;
+}
+
+input[type='range'] {
+  writing-mode: bt-lr; /* IE */
+  -webkit-appearance: slider-vertical; /* WebKit */
 }
 </style>

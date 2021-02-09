@@ -2,7 +2,7 @@ export default {
   component: 'fa',
   suffix: true,
   icons: {
-    solid: ['faCog', 'faTimes', 'faCheck'],
+    solid: ['faCog', 'faTimes', 'faCheck', 'faMusic', 'faList', 'faVolumeUp'],
     brands: [
       'faFacebookSquare',
       'faTwitterSquare',

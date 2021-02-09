@@ -1,5 +1,5 @@
 <template>
-  <div class="w-screen h-screen bg-blue-300">
+  <div class="w-screen h-screen bg-purple-900">
     <!-- Parameters -->
     <div class="absolute top-0 left-0 m-4 cursor-pointer">
       <fa-icon
@@ -19,24 +19,6 @@
           />
         </div>
         <div class="flex justify-between">
-          <label for="showNotes" class="mr-4">Display Keys Name</label>
-          <input
-            id="showNotes"
-            v-model="debug.notes"
-            type="checkbox"
-            name="showNotes"
-          />
-        </div>
-        <div class="flex justify-between">
-          <label for="showValues" class="mr-4">Debug Keyboard Values</label>
-          <input
-            id="showValues"
-            v-model="debug.values"
-            type="checkbox"
-            name="showValues"
-          />
-        </div>
-        <div class="flex justify-between">
           <label for="onlyLightCanBePlayed" class="mr-4"
             >Only light note can be played</label
           >
@@ -50,63 +32,31 @@
       </div>
     </transition>
 
-    <nav class="m-auto text-center">
-      Choix du mode:
-      <span class="cursor-pointer text-xl" @click="displayMode = 0"
-        >Banque</span
-      >
-      -
-      <span class="cursor-pointer text-xl" @click="displayMode = 1"
-        >Training</span
-      >
-      -
-      <span class="cursor-pointer text-xl" @click="displayMode = 2"
-        >Oreille</span
-      >
-    </nav>
+    <!-- Top Menu -->
 
-    <div>
-      <Banque v-if="displayMode === 0" class="pt-10" />
+    <MenuTab @changeTab="changeTab" />
+
+    <div class="pt-10">
+      <Banque v-if="displayMode === 0" />
       <Training v-if="displayMode === 1" />
       <Oreille v-if="displayMode === 2" />
     </div>
 
-    <Piano
-      class="absolute inset-x-0"
-      style="bottom: 50px"
-      :debug-notes="debug.notes"
-      :debug-values="debug.values"
-    />
-
-    <input v-model="volume" type="range" min="0" max="1" step="0.1" />
+    <Piano />
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
 
-/*       @click="(debug.notes = !debug.notes)"
-      @click="(debug.values = !debug.values)" */
 export default Vue.extend({
   data() {
     return {
       displayMode: null,
       showParameters: false,
-      debug: {
-        notes: false,
-        values: false,
-      },
     }
   },
   computed: {
-    volume: {
-      get() {
-        return this.$store.state.sounds.volume
-      },
-      set(newValue) {
-        this.$store.commit('sounds/setVolume', newValue)
-      },
-    },
     onlyLightCanBePlayed: {
       get() {
         return this.$store.state.piano.onlyLightCanBePlayed
@@ -132,7 +82,11 @@ export default Vue.extend({
   created() {
     this.displayMode = 0
   },
-  methods: {},
+  methods: {
+    changeTab(tab) {
+      this.displayMode = tab
+    },
+  },
 })
 </script>
 
