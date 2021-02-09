@@ -19,7 +19,7 @@
       <div
         v-for="(accords, index) of banque[selectedBanque]"
         :key="index"
-        class="p-2 m-2 cursor-pointer"
+        class="p-2 m-2 cursor-pointer rounded-sm"
         :class="selectedMode == index ? 'bg-red-200' : 'bg-white'"
         @click="selectedMode = index"
       >
@@ -32,7 +32,7 @@
       <div
         v-for="(note, i) of notes"
         :key="i"
-        class="bg-white p-2 m-2 cursor-pointer"
+        class="p-2 m-2 cursor-pointer rounded-sm"
         :class="selectedFondamentale == note ? 'bg-red-200' : 'bg-white'"
         @click="selectedFondamentale = note"
       >

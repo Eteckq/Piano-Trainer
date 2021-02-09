@@ -16,6 +16,11 @@ function getNoteFromNumber(number) {
 export const actions = {
   playNote({ state }, { number, velocity }) {
     if (!process.client) return
+    if (this.state.piano.onlyLightCanBePlayed) {
+      if (!this.getters['piano/isLight'](number)) {
+        return
+      }
+    }
     const note = getNoteFromNumber(number)
 
     const audio = state.sounds[note.name + note.octave]

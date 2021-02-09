@@ -42,7 +42,7 @@
           >
           <input
             id="onlyLightCanBePlayed"
-            v-model="debug.onlyLightCanBePlayed"
+            v-model="onlyLightCanBePlayed"
             type="checkbox"
             name="onlyLightCanBePlayed"
           />
@@ -74,7 +74,6 @@
     <Piano
       class="absolute inset-x-0"
       style="bottom: 50px"
-      :only-light-can-be-played="debug.onlyLightCanBePlayed"
       :debug-notes="debug.notes"
       :debug-values="debug.values"
     />
@@ -96,7 +95,6 @@ export default Vue.extend({
       debug: {
         notes: false,
         values: false,
-        onlyLightCanBePlayed: false,
       },
     }
   },
@@ -107,6 +105,14 @@ export default Vue.extend({
       },
       set(newValue) {
         this.$store.commit('sounds/setVolume', newValue)
+      },
+    },
+    onlyLightCanBePlayed: {
+      get() {
+        return this.$store.state.piano.onlyLightCanBePlayed
+      },
+      set(newValue) {
+        this.$store.commit('piano/setOnlyLightCanBePlayed', newValue)
       },
     },
   },

@@ -38,7 +38,7 @@
 
 <script>
 export default {
-  props: ['debugNotes', 'debugValues', 'onlyLightCanBePlayed'],
+  props: ['debugNotes', 'debugValues'],
   data() {
     return {
       pianoNotes: [],
