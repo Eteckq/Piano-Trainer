@@ -16,7 +16,10 @@ export const mutations = {
     }
     state.activeNotes.push(number)
     this.dispatch('sounds/playNote', { number, velocity })
-    state.lastPressedNote = number
+    state.lastPressedNote = {
+      number,
+      time: new Date(),
+    }
   },
   removeNote(state, number) {
     state.activeNotes = state.activeNotes.filter((n) => {

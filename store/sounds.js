@@ -2,6 +2,8 @@ import * as Tone from 'tone'
 let sampler
 
 export const state = () => ({
+  volume: 0.8,
+  instrument: 'piano',
   instruments: [
     'bass-electric',
     'bassoon',
@@ -24,7 +26,7 @@ export const state = () => ({
     'violin',
     'xylophone',
   ],
-  volume: 0.5,
+  loaded: false,
 })
 
 const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -39,10 +41,12 @@ function getNoteFromNumber(number) {
 
 export const actions = {
   init({ state, dispatch }) {
-    dispatch('loadSounds', 'guitar-nylon')
+    dispatch('loadSounds', 'piano')
   },
   loadSounds({ state, commit }, instrument) {
-    commit('clearSound')
+    if (sampler) sampler.releaseAll()
+    commit('setIsLoaded', false)
+    commit('setIntrument', instrument)
 
     sampler = new Tone.Sampler({
       urls: instruments[instrument],
@@ -50,18 +54,32 @@ export const actions = {
       baseUrl: `/samples/${instrument}/`,
     }).toDestination()
 
-    /* Tone.loaded().then(() => {
-      state.sampler.triggerAttackRelease(['Eb4', 'G4', 'Bb4'], 1)
-    }) */
+    Tone.loaded().then(() => {
+      commit('setIsLoaded', true)
+    })
+  },
+  playNotes({ state }, { numbers, velocity }) {
+    if (!state.loaded) return
+    if (this.state.piano.onlyLightCanBePlayed) {
+      if (!this.getters['piano/isLight'](number)) {
+        return
+      }
+    }
+    const notes = []
+    for (const number of numbers) {
+      notes.push(getNoteFromNumber(number))
+    }
+    sampler.triggerAttackRelease(notes)
   },
   playNote({ state }, { number, velocity }) {
+    if (!state.loaded) return
     if (this.state.piano.onlyLightCanBePlayed) {
       if (!this.getters['piano/isLight'](number)) {
         return
       }
     }
     const note = getNoteFromNumber(number)
-    sampler.triggerAttack(note.name + note.octave)
+    sampler.triggerAttackRelease(note.name + note.octave, 4)
   },
   stopNote({ state }, number) {
     const note = getNoteFromNumber(number)
@@ -70,14 +88,19 @@ export const actions = {
 }
 
 export const mutations = {
+  setIsLoaded(state, loaded) {
+    state.loaded = loaded
+  },
   setVolume(state, volume) {
     state.volume = volume
+    let db = (volume - 0.8) * 30
+    if (volume == 0) {
+      db = -Infinity
+    }
+    Tone.getDestination().volume.rampTo(db)
   },
-  clearSound(state) {
-    state.sounds = {}
-  },
-  pushSound(state, { note, octave, audio }) {
-    state.sounds[note + octave] = audio
+  setIntrument(state, instrument) {
+    state.instrument = instrument
   },
 }
 

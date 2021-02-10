@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import { log } from 'tone/build/esm/core/util/Debug'
 export default {
   data() {
     return {
@@ -33,6 +34,12 @@ export default {
     }
   },
   computed: {
+    startingOctave() {
+      return this.$store.state.piano.startingOctave
+    },
+    octaveCount() {
+      return this.$store.state.piano.octaveCount
+    },
     banque() {
       return this.$store.state.bank.banque
     },
@@ -41,9 +48,15 @@ export default {
     },
   },
   watch: {
-    lastPressedNote() {
+    startingOctave() {
+      this.setRandomNote()
+    },
+    octaveCount() {
+      this.setRandomNote()
+    },
+    lastPressedNote(val) {
       if (this.step === 0) {
-        if (this.lastPressedNote === this.noteToFind) {
+        if (val.number === this.noteToFind) {
           this.noteFound()
         } else {
           this.wrongNote()
@@ -71,9 +84,8 @@ export default {
     setRandomNote() {
       this.step = 0
       this.noteToFind =
-        this.$store.state.piano.startingOctave * 12 +
-        Math.floor(Math.random() * 12) +
-        1
+        this.startingOctave * 12 +
+        Math.floor(Math.random() * 12 * this.octaveCount)
       this.playNote()
     },
     playNote() {

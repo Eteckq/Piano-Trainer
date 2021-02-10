@@ -86,13 +86,13 @@ export default {
         return
       }
 
-      if (last && val === last) {
+      if (last.number && val.number === last.number) {
         return
       }
 
-      if (this.accordToFind.numbers.some((note) => note === val)) {
+      if (this.accordToFind.numbers.some((note) => note === val.number)) {
         this.leftNoteToFind = this.leftNoteToFind.filter(
-          (number) => number !== val
+          (number) => number !== val.number
         )
         if (this.leftNoteToFind.length === 0) {
           this.setRandomAccord()

@@ -10,13 +10,28 @@
       <div id="leftPiano" class="bg-black w-16">
         <label for="isSustain" class="text-white">Sustain</label>
         <input
+          id="isSustain"
           v-model="sustain"
           type="checkbox"
-          id="isSustain"
           name="isSustain"
         />
+        <select id="instrumentsSelect" v-model="instrument" name="instruments">
+          <option v-for="(i, index) of instruments" :key="index" :value="i">
+            {{ i }}
+          </option>
+        </select>
+        <div
+          class="text-white cursor-pointer text-6xl"
+          @click="startingOctave--"
+        >
+          -
+        </div>
       </div>
-      <div class="flex">
+
+      <div class="flex relative">
+        <div v-if="!isLoaded" class="absolute inset-0 z-50">
+          <p class="text-center py-48">Loading...</p>
+        </div>
         <div
           v-for="(number, index) of pianoNotes"
           :key="index"
@@ -32,31 +47,43 @@
             @mousedown="addNote(number)"
             @mouseup="removeNote(number)"
           >
-            <span v-if="debugNotes" class="absolute bottom-0 inset-x-0"
-              >{{ number | toNoteName }} {{ number | toNoteOctave }}</span
-            >
-            <span
-              v-else-if="number % 12 === 0"
-              class="text-black absolute bottom-0 inset-x-0"
-              >{{ number | toNoteName }} {{ number | toNoteOctave }}</span
-            >
+            <span class="text-black absolute inset-x-0" style="bottom: 15px">
+              <span v-if="debugNotes"
+                >{{ number | toNoteName }} {{ number | toNoteOctave }}</span
+              >
+              <span v-else-if="number % 12 === 0"
+                >{{ number | toNoteName }} {{ number | toNoteOctave }}</span
+              >
+            </span>
           </div>
         </div>
       </div>
       <!-- Right Piano -->
+      <div class="text-white cursor-pointer text-6xl" @click="startingOctave++">
+        +
+      </div>
       <div
         id="rightPiano"
         class="bg-black w-16 flex flex-col justify-center items-center"
       >
-        <fa-icon class="text-xl text-white my-2" :icon="['fas', 'volume-up']" />
+        <span class="text-xl text-white my-2 cursor-pointer"
+          ><fa-icon
+            v-if="volume > 0"
+            :icon="['fas', 'volume-up']"
+            @click="volume = 0" /><fa-icon
+            v-else
+            :icon="['fas', 'volume-mute']"
+            @click="volume = 0.5"
+        /></span>
+
         <input
+          id="soundInput"
           v-model="volume"
           type="range"
           min="0"
           max="1"
           step="0.05"
           name="soundInput"
-          id="soundInput"
         />
       </div>
     </div>
@@ -72,6 +99,20 @@ export default {
     }
   },
   computed: {
+    isLoaded() {
+      return this.$store.state.sounds.loaded
+    },
+    instrument: {
+      get() {
+        return this.$store.state.sounds.instrument
+      },
+      set(val) {
+        this.$store.dispatch('sounds/loadSounds', val)
+      },
+    },
+    instruments() {
+      return this.$store.state.sounds.instruments
+    },
     volume: {
       get() {
         return this.$store.state.sounds.volume
@@ -92,8 +133,14 @@ export default {
     octaveCount() {
       return this.$store.state.piano.octaveCount
     },
-    startingOctave() {
-      return this.$store.state.piano.startingOctave
+    startingOctave: {
+      get() {
+        return this.$store.state.piano.startingOctave
+      },
+      set(val) {
+        if (val === -1 || val === 7) return
+        this.$store.commit('piano/setStartingOctave', val)
+      },
     },
     sustain: {
       get() {
@@ -155,12 +202,11 @@ export default {
         'A',
         'A#',
         'B',
-      ][number % 12]
+      ][Math.abs(number) % 12]
       return name[1] && name[1] === '#'
     },
     addNote(number) {
       this.$store.commit('inputs/pushNote', { number, velocity: 0.7 })
-      // FIXME event: lastnote pressed & pressedNotes + light note can be played
     },
     removeNote(number) {
       this.$store.commit('inputs/removeNote', number)
