@@ -3,6 +3,7 @@ import FaConfig from './fontawasome.icons'
 
 const config: NuxtConfig = {
   target: 'static',
+  ssr: false,
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
@@ -42,6 +43,7 @@ const config: NuxtConfig = {
 
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
+    'nuxt-client-init-module',
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa

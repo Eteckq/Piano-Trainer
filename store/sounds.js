@@ -1,5 +1,8 @@
+import * as Tone from 'tone'
+
 export const state = () => ({
   sounds: {},
+  instruments: ['piano', 'guitar-nylon'],
   volume: 0.5,
 })
 
@@ -14,8 +17,25 @@ function getNoteFromNumber(number) {
 }
 
 export const actions = {
+  init({ state, dispatch }) {
+    dispatch('loadSounds', 'guitar-nylon')
+    const synth = new Tone.Synth().toDestination()
+    synth.triggerAttackRelease('C4', '8n')
+  },
+  loadSounds({ commit }, instrument) {
+    commit('clearSound')
+
+    for (let octave = 0; octave < 8; octave++) {
+      for (const note of notes) {
+        const nameFormated = note.toLowerCase().toUpperCase().replace('#', 's')
+        const audio = new Audio(
+          `/samples/${instrument}/${nameFormated + octave}.mp3`
+        )
+        commit('pushSound', { note, octave, audio })
+      }
+    }
+  },
   playNote({ state }, { number, velocity }) {
-    if (!process.client) return
     if (this.state.piano.onlyLightCanBePlayed) {
       if (!this.getters['piano/isLight'](number)) {
         return
@@ -33,29 +53,12 @@ export const actions = {
     }
   },
   stopNote({ state }, number) {
-    if (!process.client) return
     const note = getNoteFromNumber(number)
     const audio = state.sounds[note.name + note.octave]
     if (!audio) console.error('Note undefined', note)
     else {
       audio.pause()
       audio.currentTime = 0
-    }
-  },
-  loadSounds({ commit }) {
-    if (!process.client) return
-    commit('clearSound')
-
-    for (let octave = 0; octave < 8; octave++) {
-      for (const note of notes) {
-        const nameFormated = note.toLowerCase().replace('#', 's')
-        const audio = new Audio(
-          `https://www.multiplayerpiano.com/sounds/Emotional_2.0/${
-            nameFormated + octave
-          }.mp3`
-        )
-        commit('pushSound', { note, octave, audio })
-      }
     }
   },
 }

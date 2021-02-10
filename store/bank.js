@@ -3,7 +3,7 @@ export const state = () => ({
 })
 
 export const mutations = {
-  createNote(state) {
+  init(state) {
     state.banque.accords = {}
 
     state.banque.accords.Majeur = noteBuilder([4, 7])
