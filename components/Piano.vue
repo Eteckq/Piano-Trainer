@@ -1,33 +1,38 @@
 <template>
-  <!-- <div
-          class="text-white cursor-pointer text-6xl"
-          @click="startingOctave--"
-        >
-          -
-        </div> -->
-
-  <!-- <div class="text-white cursor-pointer text-6xl" @click="startingOctave++">
-        +
-      </div> -->
   <div class="m-auto" style="width: -moz-min-content; width: min-content">
     <!-- Piano -->
     <!-- Top -->
-    <div class="bg-gray-500 h-16">
-      <select
-        id="instrumentsSelect"
-        v-model="instrument"
-        class="m-auto"
-        name="instruments"
-      >
+    <div class="pianoPart h-16 flex justify-around items-center">
+      <!-- Select Instrument -->
+      <select id="instrumentsSelect" v-model="instrument" name="instruments">
         <option v-for="(i, index) of instruments" :key="index" :value="i">
           {{ i }}
         </option>
       </select>
+      <!-- Transpose Keys -->
+      <div class="flex flex-col items-center">
+        <span class="font-medium text-white">Transpose</span>
+        <div class="flex">
+          <div
+            class="text-white cursor-pointer text-3xl leading-none px-1"
+            @click="startingOctave--"
+          >
+            -
+          </div>
+
+          <div
+            class="text-white cursor-pointer text-3xl leading-none px-1"
+            @click="startingOctave++"
+          >
+            +
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="flex">
       <!-- Left Piano -->
-      <div id="leftPiano" class="bg-gray-500 w-16">
+      <div id="leftPiano" class="pianoPart w-16">
         <label for="isSustain" class="text-white">Sustain</label>
         <input
           id="isSustain"
@@ -72,7 +77,7 @@
       <!-- Right Piano -->
       <div
         id="rightPiano"
-        class="bg-gray-500 w-16 flex flex-col justify-center items-center"
+        class="pianoPart w-16 flex flex-col justify-center items-center"
       >
         <span class="text-xl text-white my-2 cursor-pointer"
           ><fa-icon
@@ -146,7 +151,7 @@ export default {
         return this.$store.state.piano.startingOctave
       },
       set(val) {
-        if (val === -1 || val === 7) return
+        if (val === -1 || val + this.octaveCount === 7) return
         this.$store.commit('piano/setStartingOctave', val)
       },
     },
@@ -283,6 +288,10 @@ export default {
 #rightPiano,
 #leftPiano {
   height: 310px;
+}
+
+.pianoPart {
+  background-color: #222;
 }
 
 input[type='range'] {

@@ -64,7 +64,7 @@ export const actions = {
     for (const number of numbers) {
       notes.push(getNoteFromNumber(number))
     }
-    sampler.triggerAttackRelease(notes)
+    sampler.triggerAttackRelease(notes, seconds, velocity)
   },
   playNote({ state }, { number, velocity }) {
     if (!state.loaded) return
@@ -74,7 +74,6 @@ export const actions = {
       }
     }
     const note = getNoteFromNumber(number)
-    console.log(sampler)
     sampler.triggerAttack(note.name + note.octave, undefined, velocity)
   },
   stopNote({ state }, number) {
