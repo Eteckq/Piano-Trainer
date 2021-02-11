@@ -39,12 +39,31 @@ function getNoteFromNumber(number) {
   }
 }
 
+function getNumberFromName(name) {
+  let note = name[0]
+  let octave = name[1]
+  if (name.length === 3) {
+    note += name[1]
+    octave = name[2]
+  }
+  const i = notes.indexOf(note)
+  const number = i + octave * 12
+  return number
+}
+
 export const actions = {
   init({ state, dispatch }) {
-    dispatch('loadSounds', 'piano')
+    document.addEventListener(
+      'click',
+      async () => {
+        await Tone.start()
+        dispatch('loadSounds', 'piano')
+      },
+      { once: true }
+    )
   },
   loadSounds({ state, commit }, instrument) {
-    if (sampler) sampler.releaseAll()
+    if (sampler) sampler.dispose()
     commit('setIsLoaded', false)
     commit('setIntrument', instrument)
 
@@ -58,13 +77,27 @@ export const actions = {
       commit('setIsLoaded', true)
     })
   },
-  playNotes({ state }, { numbers, seconds, velocity }) {
-    if (!state.loaded) return
-    const notes = []
-    for (const number of numbers) {
-      notes.push(getNoteFromNumber(number))
-    }
-    sampler.triggerAttackRelease(notes, seconds, velocity)
+  playTrack({ dispatch }, track) {
+    const now = Tone.now() + 0.5
+    track.notes.forEach((note) => {
+      let number = getNumberFromName(note.name)
+      setTimeout(() => {
+        sampler.triggerAttackRelease(
+          note.name,
+          note.duration,
+          undefined,
+          note.velocity
+        )
+        this.dispatch('inputs/pushNoteFromMidi', {
+          number: number - 12,
+          duration: note.duration,
+        })
+      }, (note.time + now) * 1000)
+    })
+  },
+  reload({ dispatch }) {
+    console.log('reload')
+    dispatch('loadSounds', 'piano')
   },
   playNote({ state }, { number, velocity }) {
     if (!state.loaded) return

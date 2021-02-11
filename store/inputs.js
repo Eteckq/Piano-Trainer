@@ -5,9 +5,24 @@ export const state = () => ({
   sustain: true,
 })
 
-export const actions = {}
+export const actions = {
+  pushNoteFromMidi({ commit }, { number, duration }) {
+    setTimeout(() => {
+      commit('forceRemoveNote', { number })
+    }, duration * 1000)
+    commit('pushNoteFromMidi', { number, duration })
+  },
+}
 
 export const mutations = {
+  forceRemoveNote(state, { number }) {
+    state.activeNotes = state.activeNotes.filter((n) => {
+      return n !== number
+    })
+  },
+  pushNoteFromMidi(state, { number }) {
+    state.activeNotes.push(number)
+  },
   pushNote(state, { number, velocity }) {
     if (state.activeNotes.some((n) => number === n)) {
       state.activeNotes = state.activeNotes.filter((n) => {

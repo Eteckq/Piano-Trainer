@@ -11,17 +11,17 @@
           ><fa-icon class="text-5xl" :icon="['fas', 'list']"
         /></label>
       </nuxt-link>
-      <nuxt-link to="training">
+      <nuxt-link to="/training">
         <label for="menu1" class=""
           ><fa-icon class="text-5xl" :icon="['fas', 'music']"
         /></label>
       </nuxt-link>
-      <nuxt-link to="ear">
+      <nuxt-link to="/ear">
         <label for="menu2" class=""
           ><fa-icon class="text-5xl" :icon="['fas', 'list']"
         /></label>
       </nuxt-link>
-      <nuxt-link to="parameters">
+      <nuxt-link to="/midi">
         <label for="menu3" class=""
           ><fa-icon class="text-5xl" :icon="['fas', 'cog']"
         /></label>
