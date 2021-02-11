@@ -14,9 +14,9 @@
     <!-- Top -->
     <div class="bg-gray-500 h-16">
       <select
-        class="m-auto"
         id="instrumentsSelect"
         v-model="instrument"
+        class="m-auto"
         name="instruments"
       >
         <option v-for="(i, index) of instruments" :key="index" :value="i">

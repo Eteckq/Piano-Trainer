@@ -50,7 +50,7 @@ export const actions = {
 
     sampler = new Tone.Sampler({
       urls: instruments[instrument],
-      // release: 1,
+      release: 1,
       baseUrl: `/samples/${instrument}/`,
     }).toDestination()
 
@@ -58,13 +58,8 @@ export const actions = {
       commit('setIsLoaded', true)
     })
   },
-  playNotes({ state }, { numbers, velocity }) {
+  playNotes({ state }, { numbers, seconds, velocity }) {
     if (!state.loaded) return
-    if (this.state.piano.onlyLightCanBePlayed) {
-      if (!this.getters['piano/isLight'](number)) {
-        return
-      }
-    }
     const notes = []
     for (const number of numbers) {
       notes.push(getNoteFromNumber(number))
@@ -79,7 +74,8 @@ export const actions = {
       }
     }
     const note = getNoteFromNumber(number)
-    sampler.triggerAttack(note.name + note.octave, velocity)
+    console.log(sampler)
+    sampler.triggerAttack(note.name + note.octave, undefined, velocity)
   },
   stopNote({ state }, number) {
     const note = getNoteFromNumber(number)
@@ -94,6 +90,7 @@ export const mutations = {
   setVolume(state, volume) {
     state.volume = volume
     let db = (volume - 0.8) * 30
+    // eslint-disable-next-line eqeqeq
     if (volume == 0) {
       db = -Infinity
     }
