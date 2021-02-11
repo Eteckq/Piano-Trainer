@@ -16,7 +16,7 @@ export default {
   },
   created() {
     this.$store.commit('piano/setOctaveCount', 5)
-    this.urlToMidi('http://localhost:3000/midi/Zanarkand.mid')
+    this.urlToMidi('/midi/Zanarkand.mid')
   },
   beforeDestroy() {
     this.$store.dispatch('sounds/reload')

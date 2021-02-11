@@ -80,7 +80,7 @@ export const actions = {
   playTrack({ dispatch }, track) {
     const now = Tone.now() + 0.5
     track.notes.forEach((note) => {
-      let number = getNumberFromName(note.name)
+      const number = getNumberFromName(note.name)
       setTimeout(() => {
         sampler.triggerAttackRelease(
           note.name,
