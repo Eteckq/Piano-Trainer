@@ -23,7 +23,6 @@
 </template>
 
 <script>
-import { log } from 'tone/build/esm/core/util/Debug'
 export default {
   data() {
     return {
@@ -65,7 +64,6 @@ export default {
     },
   },
   created() {
-    this.setRandomNote()
     this.$store.commit('piano/setOctaveCount', 1)
   },
   methods: {

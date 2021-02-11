@@ -1,5 +1,8 @@
+const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+
 export const state = () => ({
   banque: {},
+  notes,
 })
 
 export const mutations = {
@@ -18,8 +21,6 @@ export const mutations = {
     state.banque.gammes.Mineur = noteBuilder([2, 3, 5, 7, 8, 10, 12])
   },
 }
-
-const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
 function noteBuilder(operations) {
   const translateNote = (note) => {

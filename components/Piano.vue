@@ -1,13 +1,33 @@
 <template>
-  <div>
-    <!-- <div class="bg-black h-16"></div> -->
+  <!-- <div
+          class="text-white cursor-pointer text-6xl"
+          @click="startingOctave--"
+        >
+          -
+        </div> -->
+
+  <!-- <div class="text-white cursor-pointer text-6xl" @click="startingOctave++">
+        +
+      </div> -->
+  <div class="m-auto" style="width: -moz-min-content; width: min-content">
     <!-- Piano -->
-    <div
-      v-if="pianoNotes.length > 0"
-      class="m-auto flex justify-center bg-black pt-16"
-    >
+    <!-- Top -->
+    <div class="bg-gray-500 h-16">
+      <select
+        class="m-auto"
+        id="instrumentsSelect"
+        v-model="instrument"
+        name="instruments"
+      >
+        <option v-for="(i, index) of instruments" :key="index" :value="i">
+          {{ i }}
+        </option>
+      </select>
+    </div>
+
+    <div class="flex">
       <!-- Left Piano -->
-      <div id="leftPiano" class="bg-black w-16">
+      <div id="leftPiano" class="bg-gray-500 w-16">
         <label for="isSustain" class="text-white">Sustain</label>
         <input
           id="isSustain"
@@ -15,20 +35,10 @@
           type="checkbox"
           name="isSustain"
         />
-        <select id="instrumentsSelect" v-model="instrument" name="instruments">
-          <option v-for="(i, index) of instruments" :key="index" :value="i">
-            {{ i }}
-          </option>
-        </select>
-        <div
-          class="text-white cursor-pointer text-6xl"
-          @click="startingOctave--"
-        >
-          -
-        </div>
       </div>
 
-      <div class="flex relative">
+      <!-- Center -->
+      <div v-if="pianoNotes.length > 0" class="flex relative">
         <div v-if="!isLoaded" class="absolute inset-0 z-50">
           <p class="text-center py-48">Loading...</p>
         </div>
@@ -58,13 +68,11 @@
           </div>
         </div>
       </div>
+
       <!-- Right Piano -->
-      <div class="text-white cursor-pointer text-6xl" @click="startingOctave++">
-        +
-      </div>
       <div
         id="rightPiano"
-        class="bg-black w-16 flex flex-col justify-center items-center"
+        class="bg-gray-500 w-16 flex flex-col justify-center items-center"
       >
         <span class="text-xl text-white my-2 cursor-pointer"
           ><fa-icon

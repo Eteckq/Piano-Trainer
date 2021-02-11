@@ -79,7 +79,7 @@ export const actions = {
       }
     }
     const note = getNoteFromNumber(number)
-    sampler.triggerAttackRelease(note.name + note.octave, 4)
+    sampler.triggerAttack(note.name + note.octave, velocity)
   },
   stopNote({ state }, number) {
     const note = getNoteFromNumber(number)

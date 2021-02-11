@@ -82,11 +82,7 @@ export default {
   },
   watch: {
     lastPressedNote(val, last) {
-      if (this.inConfig) {
-        return
-      }
-
-      if (last.number && val.number === last.number) {
+      if (this.inConfig || (last.number && val.number === last.number)) {
         return
       }
 
