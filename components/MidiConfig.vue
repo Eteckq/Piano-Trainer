@@ -1,18 +1,11 @@
 <template>
   <div>
     <div
-      v-for="(input, index) of inputs"
+      v-for="(device, index) of devices"
       :key="index"
-      @click="$store.dispatch('midi/setupInput', input)"
+      @click="$store.dispatch('midi/setupInput', device)"
     >
-      {{ input }}
-    </div>
-    <div
-      v-for="(output, index) of outputs"
-      :key="index"
-      @click="$store.dispatch('midi/setupOutput', output)"
-    >
-      {{ output }}
+      {{ device.name }}
     </div>
   </div>
 </template>
@@ -23,16 +16,12 @@ export default {
     return {}
   },
   computed: {
-    inputs() {
-      return this.$store.state.midi.inputs
-    },
-    outputs() {
-      return this.$store.state.midi.inputs
+    devices() {
+      return this.$store.state.midi.devices
     },
   },
-  methods: {},
+  created() {
+    console.log(this.inputs)
+  },
 }
 </script>
-
-<style>
-</style>

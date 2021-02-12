@@ -51,6 +51,16 @@ function getNumberFromName(name) {
   return number
 }
 
+function getNameMinusOctave(name, octave) {
+  let note = name[0]
+  let o = name[1] - octave
+  if (name.length === 3) {
+    note += name[1]
+    o = name[2] - octave
+  }
+  return note + o
+}
+
 export const actions = {
   init({ state, dispatch }) {
     document.addEventListener(
@@ -77,19 +87,22 @@ export const actions = {
       commit('setIsLoaded', true)
     })
   },
+  playAndReleaseNote({ dispatch }, { note, duration, velocity }) {
+    sampler.triggerAttackRelease(note, duration, undefined, velocity)
+  },
   playTrack({ dispatch }, track) {
     const now = Tone.now() + 0.5
     track.notes.forEach((note) => {
       const number = getNumberFromName(note.name)
       setTimeout(() => {
         sampler.triggerAttackRelease(
-          note.name,
+          getNameMinusOctave(note.name, 1),
           note.duration,
           undefined,
           note.velocity
         )
         this.dispatch('inputs/pushNoteFromMidi', {
-          number: number - 12,
+          number: number - 24,
           duration: note.duration,
         })
       }, (note.time + now) * 1000)
@@ -107,10 +120,17 @@ export const actions = {
       }
     }
     const note = getNoteFromNumber(number)
+    this.dispatch('midi/sendPlayNoteToOutputs', {
+      note: note.name + note.octave,
+      velocity,
+    })
     sampler.triggerAttack(note.name + note.octave, undefined, velocity)
   },
   stopNote({ state }, number) {
     const note = getNoteFromNumber(number)
+    this.dispatch('midi/sendStopNoteToOutputs', {
+      note: note.name + note.octave,
+    })
     sampler.triggerRelease(note.name + note.octave)
   },
 }

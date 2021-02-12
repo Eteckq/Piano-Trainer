@@ -1,8 +1,8 @@
 import WebMidi from 'webmidi'
 
 export const state = () => ({
-  inputs: [],
-  outputs: [],
+  devices: [],
+  activeOutputs: [],
 })
 
 export const getters = {
@@ -15,26 +15,38 @@ export const getters = {
 
 export const actions = {
   setupInput({ commit }, device) {
+    const state = this
     device.addListener('noteon', 'all', function (e) {
-      this.commit('inputs/pushNote', {
+      state.commit('inputs/pushNote', {
         velocity: e.velocity,
-        number: e.note.number,
+        number: e.note.number - 12 * 3,
       })
     })
     // Listen for a 'note off' message on all channels
     device.addListener('noteoff', 'all', function (e) {
-      this.commit('inputs/removeNote', e.note.number)
+      state.commit('inputs/removeNote', e.note.number - 12 * 3)
     })
 
     device.addListener('controlchange', 'all', function (e) {
-      if (e.data[2]) this.commit('inputs/setSustain', true)
-      else this.commit('inputs/setSustain', false)
+      if (e.data[2]) state.commit('inputs/setSustain', true)
+      else state.commit('inputs/setSustain', false)
     })
   },
-  removeInput({ commit }, device) {},
-  setupOutput({ commit }, device) {},
-  removeOutput({ commit }, device) {},
-  init({ commit }) {
+  sendPlayNoteToOutputs({ state }, { note, velocity }) {
+    state.activeOutputs.forEach((output) => {
+      // output.playNote(note, 'all', { velocity, duration: duration * 1000 })
+      output.playNote(note, 1, { velocity })
+    })
+  },
+  sendStopNoteToOutputs({ state }, { note }) {
+    state.activeOutputs.forEach((output) => {
+      output.stopNote(note, 1)
+    })
+  },
+  setupOutput({ commit }, device) {
+    commit('addOutputs', device)
+  },
+  init({ commit, dispatch }) {
     WebMidi.enable(function (err) {
       if (err) {
         console.error(err)
@@ -42,30 +54,27 @@ export const actions = {
 
       // Reacting when a new device becomes available
       WebMidi.addListener('connected', function (device) {
-        commit('addInput', device)
-        commit('addOutput', device)
+        commit('addDevice', device.port)
+        if (device.port.type === 'input') dispatch('setupInput', device.port)
+        // if (device.port.type === 'output') dispatch('setupOutput', device.port)
       })
 
       WebMidi.addListener('disconnected', function (device) {
-        commit('removeInput', device)
-        commit('removeOutput', device)
+        commit('removeDevice', device)
       })
     })
   },
 }
 
 export const mutations = {
-  addInput(state, device) {
-    state.inputs.push(device)
+  addDevice(state, device) {
+    state.devices.push(device)
   },
-  addOutput(state, device) {
-    state.outputs.push(device)
-  },
-  removeInput(state, device) {
+  removeDevice(state, device) {
     // state.startingOctave = octave
   },
-  removeOutput(state, device) {
-    // state.startingOctave = octave
+  addOutputs(state, device) {
+    state.activeOutputs.push(device)
   },
 }
 

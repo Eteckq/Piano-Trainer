@@ -27,6 +27,9 @@
         /></label>
       </nuxt-link>
     </nav>
+    <nuxt-link to="/parameters">
+      <fa-icon class="text-5xl" :icon="['fas', 'cog']" />
+    </nuxt-link>
   </section>
 </template>
 

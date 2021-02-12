@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{ this.$store.state.keyboard.config }}
+    <!-- {{ this.$store.state.keyboard.config }} -->
   </div>
 </template>
 

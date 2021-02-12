@@ -35,9 +35,15 @@
       <span
         class="py-2 px-4 text-xl bg-white cursor-pointer"
         @click="startTraining"
-        >Commencer</span
+        >Entrainement Libre</span
+      >
+      <span
+        class="py-2 px-4 text-xl bg-white cursor-pointer"
+        @click="startTryhard"
+        >Entrainement Chronométré</span
       >
     </div>
+
     <!-- Training -->
     <div v-else>
       <span
@@ -47,12 +53,24 @@
       >
       <h1>Entrainement: {{ config.type }}</h1>
       <h2>Mode: {{ config.mode }}</h2>
-      <div v-if="accordToFind" class="text-6xl">
-        {{ accordToFind.fondamentale }} <span class="text-gray-400">|</span>
-        {{ accordToFind.fondamentale | toLatine }}
+
+      <div class="flex items-center justify-center">
+        <div v-if="accordToFind" class="text-6xl">
+          {{ accordToFind.fondamentale }} <span class="text-gray-400">|</span>
+          {{ accordToFind.fondamentale | toLatine }}
+        </div>
+
+        <div v-if="nextAccordToFind" class="ml-8 text-4xl text-gray-400">
+          {{ nextAccordToFind.fondamentale }}
+          <span class="text-gray-400">|</span>
+          {{ nextAccordToFind.fondamentale | toLatine }}
+        </div>
       </div>
       <p class="text-3xl">{{ leftNoteToFind.length }}</p>
     </div>
+    <span v-if="waitingForKey">Appuyez sur une touche pour commencer</span>
+    <span v-if="score !== 0">Score: {{ score }}</span>
+    <span v-if="timer > 0">Temps restants: {{ timer }}</span>
   </div>
 </template>
 
@@ -66,7 +84,11 @@ export default {
         mode: 'Majeur',
       },
       accordToFind: [],
+      nextAccordToFind: [],
       leftNoteToFind: [],
+      score: 0,
+      timer: 0,
+      waitingForKey: false,
     }
   },
   computed: {
@@ -82,7 +104,14 @@ export default {
   },
   watch: {
     lastPressedNote(val, last) {
-      if (this.inConfig || (last.number && val.number === last.number)) {
+      if (this.waitingForKey) {
+        this.startTraining()
+        this.startChrono(20)
+        this.waitingForKey = false
+        return
+      }
+
+      if (this.inConfig || (last && val.number === last.number)) {
         return
       }
 
@@ -91,9 +120,10 @@ export default {
           (number) => number !== val.number
         )
         if (this.leftNoteToFind.length === 0) {
-          this.setRandomAccord()
+          this.right()
         }
       } else {
+        this.wrong()
         this.leftNoteToFind = this.accordToFind.numbers
       }
       this.$store.commit(
@@ -109,8 +139,23 @@ export default {
   },
   methods: {
     startTraining() {
+      this.score = 0
       this.inConfig = false
-      this.setRandomAccord()
+      this.nextAccordToFind = this.getRandomAccord()
+      this.next()
+    },
+    startTryhard() {
+      this.waitingForKey = true
+    },
+    startChrono(second) {
+      this.timer = second
+      if (this.timer === 0) {
+        this.inConfig = true
+        return
+      }
+      setTimeout(() => {
+        this.startChrono(second - 1)
+      }, 1000)
     },
     pickRandomChord(mode) {
       const accords = this.banque[this.config.type][mode]
@@ -118,7 +163,30 @@ export default {
         return accords[Math.round(Math.random() * (accords.length - 1))]
       }
     },
-    setRandomAccord() {
+    wrong() {
+      this.$store.dispatch('sounds/playAndReleaseNote', {
+        note: 'C2',
+        duration: 0.5,
+        velocity: 0.1,
+      })
+    },
+    right() {
+      this.$store.dispatch('sounds/playAndReleaseNote', {
+        note: 'C5',
+        duration: 0.5,
+        velocity: 0.7,
+      })
+      this.score++
+      this.next()
+    },
+    next() {
+      this.accordToFind = this.nextAccordToFind
+      this.leftNoteToFind = this.accordToFind.numbers
+      while (this.nextAccordToFind === this.accordToFind) {
+        this.nextAccordToFind = this.getRandomAccord()
+      }
+    },
+    getRandomAccord() {
       const notes = [
         'C',
         'C#',
@@ -133,20 +201,20 @@ export default {
         'A#',
         'B',
       ]
-      this.accordToFind = this.pickRandomChord(this.config.mode)
+      const accord = this.pickRandomChord(this.config.mode)
 
-      this.accordToFind.numbers = []
+      accord.numbers = []
       let oldNumber = 0
-      for (const note of this.accordToFind.notes) {
+      for (const note of accord.notes) {
         let number =
           notes.indexOf(note) + 12 * this.$store.state.piano.startingOctave
         if (number < oldNumber) {
           number += 12
         }
         oldNumber = number
-        this.accordToFind.numbers.push(number)
+        accord.numbers.push(number)
       }
-      this.leftNoteToFind = this.accordToFind.numbers
+      return accord
     },
   },
 }
