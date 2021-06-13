@@ -1,28 +1,31 @@
 <template>
   <div class="m-auto text-center pt-6">
+    <helper
+      text="Entrainement: Chosissez un accord, puis selectionnez le type d'entrainement. Vous devrez ensuite réaliser les accords affichés."
+    />
     <!-- Config -->
     <div v-if="inConfig">
       <h1>
         Entrainement:
         <span
-          class="rounded-sm px-5 py-2 mx-3 cursor-pointer"
+          class="rounded-sm px-5 py-2 mx-3 cursor-pointer border rounded"
           :class="config.type == 'accords' ? 'bg-red-200' : 'bg-white'"
           @click="config.type = 'accords'"
           >Accords</span
         >
         <span
-          class="rounded-sm px-5 py-2 mx-3 cursor-pointer"
+          class="rounded-sm px-5 py-2 mx-3 cursor-pointer border rounded"
           :class="config.type == 'gammes' ? 'bg-red-200' : 'bg-white'"
           @click="config.type = 'gammes'"
           >Gammes</span
         >
       </h1>
 
-      <div class="flex justify-center">
+      <div class="flex justify-center my-2">
         <div
           v-for="(accords, index) of banque[config.type]"
           :key="index"
-          class="p-2 m-2 cursor-pointer"
+          class="p-2 m-2 cursor-pointer border rounded"
           :class="config.mode == index ? 'bg-red-200' : 'bg-white'"
           @click="config.mode = index"
         >
@@ -33,12 +36,12 @@
       </div>
 
       <span
-        class="py-2 px-4 text-xl bg-white cursor-pointer"
+        class="py-2 px-4 text-xl bg-green-100 cursor-pointer rounded bg-opacity-50 hover:bg-opacity-100"
         @click="startTraining"
         >Entrainement Libre</span
       >
       <span
-        class="py-2 px-4 text-xl bg-white cursor-pointer"
+        class="py-2 px-4 text-xl bg-red-100 cursor-pointer rounded bg-opacity-50 hover:bg-opacity-100"
         @click="startTryhard"
         >Entrainement Chronométré</span
       >
@@ -47,12 +50,12 @@
     <!-- Training -->
     <div v-else>
       <span
-        class="py-2 px-4 text-xl bg-white cursor-pointer"
+        class="py-2 px-4 my-2 text-xl bg-white cursor-pointer bg-yellow-100 rounded bg-opacity-50 hover:bg-opacity-100"
         @click="inConfig = true"
         >Retour</span
       >
-      <h1>Entrainement: {{ config.type }}</h1>
-      <h2>Mode: {{ config.mode }}</h2>
+      <h1 class="mt-2">Entrainement: {{ config.type }}</h1>
+      <h2 class="my-2">Mode: {{ config.mode }}</h2>
 
       <div class="flex items-center justify-center">
         <div v-if="accordToFind" class="text-6xl">
@@ -69,7 +72,7 @@
       <p class="text-3xl">{{ leftNoteToFind.length }}</p>
     </div>
     <span v-if="waitingForKey">Appuyez sur une touche pour commencer</span>
-    <span v-if="score !== 0">Score: {{ score }}</span>
+    <span v-if="score !== 0" class="mt-4">Score: {{ score }}</span>
     <span v-if="timer > 0">Temps restants: {{ timer }}</span>
   </div>
 </template>
@@ -92,14 +95,20 @@ export default {
     }
   },
   computed: {
-    banque() {
-      return this.$store.state.bank.banque
+    banque: {
+      get() {
+        return this.$store.state.bank.banque
+      },
     },
-    pressedNotes() {
-      return this.$store.state.inputs.activeNotes
+    pressedNotes: {
+      get() {
+        return this.$store.state.inputs.activeNotes
+      },
     },
-    lastPressedNote() {
-      return this.$store.state.inputs.lastPressedNote
+    lastPressedNote: {
+      get() {
+        return this.$store.state.inputs.lastPressedNote
+      },
     },
   },
   watch: {

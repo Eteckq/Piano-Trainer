@@ -1,15 +1,17 @@
 <template>
   <div class="m-auto text-center pt-16">
+    <helper
+      text="Entrainement à l'oreille: Ecoutez la note, puis reproduisez-la sur le piano. Vous pouvez ré-écouter la note en appuyant sur le cercle avec le '?'"
+    />
     <div
-      class="text-3xl text-white rounded-full cursor-pointer m-auto transition-colors duration-100"
+      class="text-3xl text-white rounded-full cursor-pointer m-auto transition-colors duration-100 py-12 text-center w-32"
       :class="
         step === 0
-          ? 'bg-orange-300'
+          ? 'bg-yellow-300'
           : step === 1
           ? 'bg-green-300'
           : 'bg-red-300'
       "
-      style="width: 100px; height: 100px"
       @click="playNote"
     >
       <!-- <fa-icon class="text-white " :icon="['fas', 'check']" /> -->

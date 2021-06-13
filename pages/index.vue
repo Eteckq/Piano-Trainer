@@ -1,15 +1,22 @@
 <template>
   <div class="text-center">
-    <div>
+    <helper
+      text="Banque d'accords: Ici, vous pouvez construire et visualiser vos accords"
+    />
+    <div class="mt-4">
       <input
         id="allNote"
         v-model="displayAllNote"
         type="checkbox"
         name="allNote"
       />
-      <label for="allNote">Afficher toutes les notes</label>
+      <label for="allNote">Afficher les notes sur tous le piano</label>
     </div>
-    <select v-model="selectedBanque" class="mb-5" name="banque">
+    <select
+      v-model="selectedBanque"
+      class="my-5 border rounded p-2"
+      name="banque"
+    >
       <option v-for="(type, index) in banque" :key="index" :value="index">
         {{ index }}
       </option>
@@ -19,7 +26,7 @@
       <div
         v-for="(accords, index) of banque[selectedBanque]"
         :key="index"
-        class="p-2 m-2 cursor-pointer rounded-sm"
+        class="p-2 m-2 cursor-pointer rounded-sm border rounded"
         :class="selectedMode == index ? 'bg-red-200' : 'bg-white'"
         @click="selectMode(index)"
       >
@@ -32,7 +39,7 @@
       <div
         v-for="(note, i) of notes"
         :key="i"
-        class="p-2 m-2 cursor-pointer rounded-sm"
+        class="p-2 m-2 cursor-pointer rounded-sm border rounded"
         :class="selectedFondamentale == note ? 'bg-red-200' : 'bg-white'"
         @click="selectFondamentale(note)"
       >
@@ -99,6 +106,9 @@ export default {
         this.selectedMode &&
         this.selectedFondamentale
       ) {
+        if (!this.banque[this.selectedBanque][this.selectedMode]) {
+          this.selectedMode = 'Majeur'
+        }
         const accord = this.banque[this.selectedBanque][this.selectedMode][
           this.notes.indexOf(this.selectedFondamentale)
         ]

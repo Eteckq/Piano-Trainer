@@ -10,6 +10,7 @@ export default {
       'faList',
       'faVolumeUp',
       'faVolumeMute',
+      'faTachometerAlt',
     ],
     brands: [
       'faFacebookSquare',
